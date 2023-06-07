@@ -19,4 +19,17 @@ module.exports = {
       config: {},
     },
   ],
-};
+    publishers: [
+      {
+        name: '@electron-forge/publisher-github',
+        config: {
+          repository: {
+            owner: 'bernas-estevam97',
+            name: 'walkin_pattern_analyzer'
+          },
+          prerelease: false,
+          draft: true
+        }
+      }
+    ]
+  };
