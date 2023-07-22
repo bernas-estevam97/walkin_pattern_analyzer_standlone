@@ -1,3 +1,5 @@
+require('dotenv').config({path: './.env'})
+
 module.exports = {
   packagerConfig: {
     icon: './libs/img/mouse-animal'
@@ -32,7 +34,8 @@ module.exports = {
             name: 'walkin_pattern_analyzer'
           },
           prerelease: false,
-          draft: true
+          draft: true,
+          authToken: process.env.GH_TOKEN
         }
       }
     ]
