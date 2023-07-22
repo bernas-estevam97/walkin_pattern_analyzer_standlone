@@ -16,7 +16,6 @@ function changeSize(){
   } else{
     pointSize = 4; // if no input is given 4 is default value
   }
-  console.log(inputSize);
   showSize.innerHTML = "Current point radius size is: " + pointSize + "px";
 }
 
@@ -324,12 +323,16 @@ function drawMeasureCoordinates(point, r){
 }
 
 function drawMeasurePoint(e){
+  if (pointsMeasure.length <= 1){
   var o = getPosition(e);
   drawMeasureCoordinates(o, pointSize);
   pointsMeasure.push(o);
   console.log(pointsMeasure);
   let index = pointsMeasure.indexOf(o);
   console.log("Measure Point:" + (index + 1));
+  } else{
+    return;
+  }
 }
 
 function drawMeasureCircle(){
@@ -359,7 +362,7 @@ function removeAllMeasurePoints(){
 
 
 
-function clearCanvas(){
+function resetCanvas(){
   canvas.removeEventListener('click', drawBlueLeft);
   canvas.removeEventListener('click', drawBlueRight);
   canvas.removeEventListener('click', drawRedLeft);
@@ -376,6 +379,21 @@ function clearCanvas(){
   pointSize = 4;  // when clicking reset canvas point size also goes to default --- can be changed
   showSize.innerHTML = "Current point size is: " + pointSize;
 };
+
+//function clearCanvas(){
+//  canvas.removeEventListener('click', drawBlueLeft);
+//  canvas.removeEventListener('click', drawBlueRight);
+//  canvas.removeEventListener('click', drawRedLeft);
+//  canvas.removeEventListener('click', drawRedRight);
+//  canvas.removeEventListener("click", printMousePos);
+//  canvas.removeEventListener('click', drawMeasurePoint);
+//  ctx.clearRect(0, 0, canvas.width, canvas.height);
+//  alert("Clearing points from canvas but keeping indexes. If you want to start over entirely, remove the points from the image plus their indexes by clicking reset canvas instead.");
+//  canvas.style.cursor = "auto";
+//  pointSize = 4;  // when clicking reset canvas point size also goes to default --- can be changed
+//  showSize.innerHTML = "Current point size is: " + pointSize;
+//};
+
 
 
 
@@ -398,9 +416,9 @@ function clearCanvas(){
 
 function distanceMeasurePoint(){
   if (pointsMeasure.length != 0){
-    dist = (Math.hypot(pointsMeasure[1].x - pointsMeasure[0].x, pointsMeasure[1].y - pointsMeasure[0].y)).toFixed(2);
+    dist = (Math.hypot(pointsMeasure[1].x - pointsMeasure[0].x, pointsMeasure[1].y - pointsMeasure[0].y)).toFixed(3);
     console.log(dist);
-    document.getElementById("measureToCm").innerHTML = dist + "px equals 1 centimeter";
+    document.getElementById("measureToCm").innerHTML ="&nbsp" + dist + "px equals 1 centimeter.";
     // if (imgSizeStatus == 1){
     //   document.getElementById("measureToCm").innerHTML = dist + "px equals 1 centimeter"; 
     // }
@@ -426,10 +444,10 @@ function manualInputMeasure(){
   if ((inputPixelsManually.value != '') && (savedChoices.options[savedChoices.selectedIndex].value == 'None')){
     dist = inputPixelsManually.value;
     savedChoices.value = 'None';
-    document.getElementById("measureToCm").innerHTML = dist + "px equals 1 centimeter";
+    document.getElementById("measureToCm").innerHTML ="&nbsp" + dist + "px equals 1 centimeter.";
   } if ((savedChoices.options[savedChoices.selectedIndex].value != 'None') && (inputPixelsManually.value == '')){
     dist = savedChoices[savedChoices.selectedIndex].value;
-    document.getElementById("measureToCm").innerHTML = dist + "px equals 1 centimeter";
+    document.getElementById("measureToCm").innerHTML ="&nbsp" + dist + "px equals 1 centimeter.";
   }
 }
 
@@ -455,17 +473,17 @@ let imgEdit = document.getElementById('imageEdit');
 let results = document.querySelector(".data-results");
 let buttons = document.querySelector(".buttons");
 let chButtons = document.querySelector(".buttons-change");
-let canvasInfo = document.getElementById("canvasInfo");
+// let canvasInfo = document.getElementById("canvasInfo");
 let canvasUpload = document.getElementById("canvasUpload");
 let imgName = document.getElementById("imageName");
 let tableTitle = document.getElementById("titleImage");
 let manualID = document.getElementById("entryTableID");
-document.getElementById("inputScreenInches").style.display = 'none';
-document.getElementById("screenPPI").style.display = 'none';
-document.getElementById("imageDimInches").style.display = 'none';
-document.getElementById("imageDimCm").style.display = 'none';
-document.getElementById("labelInput").style.display = 'none';
-document.getElementById("ppiCalculus").style.display = 'none';
+// document.getElementById("inputScreenInches").style.display = 'none';
+// document.getElementById("screenPPI").style.display = 'none';
+// document.getElementById("imageDimInches").style.display = 'none';
+// document.getElementById("imageDimCm").style.display = 'none';
+// document.getElementById("labelInput").style.display = 'none';
+// document.getElementById("ppiCalculus").style.display = 'none';
 document.getElementById("savedDistance").style.display = "none";
 document.getElementById("showData").style.display = "none";
 canvasUpload.style.display = "none";
@@ -476,62 +494,74 @@ chButtons.style.display = "none";
 let imgContainer = document.getElementById("imgContainer");
 let img = new Image();
  let loadFile = function(event){
-     img.src = URL.createObjectURL(event.target.files[0]);
-     let blob = img.src;
-     imgContainer.style.backgroundImage = "url(" +blob+ ")";
-     buttons.style.display = "block";
-     // results.style.display = "inline-block";
-     chButtons.style.display = "block";
-     imgInfo.style.display = "block";
-     imgEdit.style.display = "block";
-     savedDistance.style.display = '';
-     showData.style.display = '';
-     // canvasInfo.style.display = "none";
-     canvasUpload.style.display = "";
-     imgSize.innerHTML = "<strong>Uploaded image size:</strong> "+ ((event.target.files[0].size)/1024).toFixed(2) + " kb";
-     imgName.innerHTML = "<b>Image name:</b> " + event.target.files[0].name;
-     canvas.style.display = '';
+     if (event.target.files[0]['type'].split('/')[0] === 'image'){
+      img.src = URL.createObjectURL(event.target.files[0]);
+      let blob = img.src;
+      imgContainer.style.backgroundImage = "url(" +blob+ ")";
+      buttons.style.display = "block";
+      // results.style.display = "inline-block";
+      chButtons.style.display = "block";
+      imgInfo.style.display = "block";
+      imgEdit.style.display = "block";
+      savedDistance.style.display = '';
+      showData.style.display = '';
+      // canvasInfo.style.display = "none";
+      canvasUpload.style.display = "";
+      imgSize.innerHTML = "<strong>Uploaded image size:</strong> "+ ((event.target.files[0].size)/1024).toFixed(2) + " kb";
+      imgName.innerHTML = "<b>Image name:</b> " + event.target.files[0].name;
+      canvas.style.display = '';
      // document.getElementById("canvasWidth").value = '';
      // document.getElementById("canvasHeight").value = '';
-
-// IMAGE ONLOAD SECTION - //
-     img.onload = () => {
-         event.target.value = null;
-         imgWidth.innerHTML = "<strong>Uploaded image default width:</strong> "+ img.width + "px";
-         imgHeight.innerHTML = "<strong>Uploaded image default height:</strong> "+ img.height + "px";
-         imgContainer.style.border = "2px solid black";
-         if ((img.width > 1500) || (img.height > 1500)) {
-          imgContainer.style.width = (img.width*0.5) + "px";
-          imgContainer.style.height = (img.height*0.5) + "px";
-          imgContainer.style.backgroundSize = (img.width*0.5) + "px " + (img.height*0.5) + "px";
-          canvas.height = (img.height*0.5);
-          canvas.width = (img.width*0.5);
-          document.getElementById("currentImgSize").innerHTML = "<b>Current image size is:</b> " + img.width*0.5 + "x" + img.height*0.5 + " (50% of size!)<br>&#x26A0&nbsp<i>Image was too big for your screen automatically set to half the size.</i>";
-         } if ((img.width >= 3000) || (img.height >= 3000)) {
-          imgContainer.style.width = (img.width*0.25) + "px";
-          imgContainer.style.height = (img.height*0.25) + "px";
-          imgContainer.style.backgroundSize = (img.width*0.25) + "px " + (img.height*0.25) + "px";
-          canvas.height = (img.height*0.25);
-          canvas.width = (img.width*0.25);
-          document.getElementById("currentImgSize").innerHTML = "<b>Current image size is:</b> " + img.width*0.25 + "x" + img.height*0.25 + " (25% of size!)<br>&#x26A0&nbsp<i>Image was too big for your screen automatically set to 25% of the size.</i>";
-         }
-         else{
-          imgContainer.style.width = img.width + "px";
-          imgContainer.style.height = img.height + "px";
-          imgContainer.style.backgroundSize = img.width + "px " + img.height + "px";
-          canvas.height = img.height;
-          canvas.width = img.width;
-          document.getElementById("currentImgSize").innerHTML = "<b>Current image size is:</b> " + img.width+ "x" + img.height;
-         }
-         canvasInfo.innerHTML = "<strong>Canvas default size is:</strong> " + canvas.width + "x" + canvas.height;
-         document.getElementById("inputScreenInches").style.display = '';
-         document.getElementById("screenPPI").style.display = '';
-         document.getElementById("imageDimInches").style.display = '';
-         document.getElementById("imageDimCm").style.display = '';
-         document.getElementById("labelInput").style.display = '';
-         document.getElementById("ppiCalculus").style.display = '';
-         
+     } else{
+      alert('Please enter a valid image format!');
+      event.target.value = null;
      }
+// IMAGE ONLOAD SECTION - //
+    img.onload = () => {
+      event.target.value = null;
+      imgWidth.innerHTML = "<strong>Uploaded image default width:</strong> "+ img.width + "px";
+      imgHeight.innerHTML = "<strong>Uploaded image default height:</strong> "+ img.height + "px";
+      imgContainer.style.border = "2px solid black";
+      if ((img.width >= 3000) || (img.height >= 3000)) {
+        imgContainer.style.width = (img.width*0.25) + "px";
+        imgContainer.style.height = (img.height*0.25) + "px";
+        imgContainer.style.backgroundSize = (img.width*0.25) + "px " + (img.height*0.25) + "px";
+        canvas.height = (img.height*0.25);
+        canvas.width = (img.width*0.25);
+        document.getElementById("currentImgSize").innerHTML = "<b>Current image size is:</b> " + img.width*0.25 + "x" + img.height*0.25 + " (25% of size!)<br>&#x26A0&nbsp<i>Image was too big for your screen automatically set to 25% of the size.</i>";
+      } 
+      else if (((img.width >= 1500) && (img.width < 2000)) || ((img.height >= 1500) && (img.height < 2000))) {
+      imgContainer.style.width = (img.width*0.75) + "px";
+      imgContainer.style.height = (img.height*0.75) + "px";
+      imgContainer.style.backgroundSize = (img.width*0.75) + "px " + (img.height*0.75) + "px";
+      canvas.height = (img.height*0.75);
+      canvas.width = (img.width*0.75);
+      document.getElementById("currentImgSize").innerHTML = "<b>Current image size is:</b> " + img.width*0.75 + "x" + img.height*0.75 + " (75% of size!)<br>&#x26A0&nbsp<i>Image was too big for your screen automatically set to 75% of the size.</i>";
+      } else if (((img.width >= 2000) && (img.width < 3000)) || ((img.height >= 2000) && (img.height < 3000))){
+        imgContainer.style.width = (img.width*0.5) + "px";
+      imgContainer.style.height = (img.height*0.5) + "px";
+      imgContainer.style.backgroundSize = (img.width*0.5) + "px " + (img.height*0.5) + "px";
+      canvas.height = (img.height*0.5);
+      canvas.width = (img.width*0.5);
+      document.getElementById("currentImgSize").innerHTML = "<b>Current image size is:</b> " + img.width*0.5 + "x" + img.height*0.5 + " (50% of size!)<br>&#x26A0&nbsp<i>Image was too big for your screen automatically set to 50% of the size.</i>";
+      } 
+      else{
+      imgContainer.style.width = img.width + "px";
+      imgContainer.style.height = img.height + "px";
+      imgContainer.style.backgroundSize = img.width + "px " + img.height + "px";
+      canvas.height = img.height;
+      canvas.width = img.width;
+      document.getElementById("currentImgSize").innerHTML = "<b>Current image size is:</b> " + img.width+ "x" + img.height;
+      }
+      // canvasInfo.innerHTML = "<strong>Canvas default size is:</strong> " + canvas.width + "x" + canvas.height;
+      // document.getElementById("inputScreenInches").style.display = '';
+      // document.getElementById("screenPPI").style.display = '';
+      // document.getElementById("imageDimInches").style.display = '';
+      // document.getElementById("imageDimCm").style.display = '';
+      // document.getElementById("labelInput").style.display = '';
+      // document.getElementById("ppiCalculus").style.display = '';
+      
+    }
  }
 
 // FUNCTIONS TO CHANGE CANVAS DIMENSIONS //
@@ -598,9 +628,22 @@ let img = new Image();
  // }
 
  function resetImgDim(){
-   // let imgWidthInput = document.getElementById("containerWidth");
-   // let imgHeightInput = document.getElementById("containerHeight");
-   imgSizeStatus = 1;
+   var elems = document.querySelectorAll(".active");
+   [].forEach.call(elems, function(el) {
+    el.classList.remove("active");
+   });
+   canvas.removeEventListener('click', drawBlueLeft);
+   canvas.removeEventListener('click', drawBlueRight);
+   canvas.removeEventListener('click', drawRedLeft);
+   canvas.removeEventListener('click', drawRedRight);
+   canvas.removeEventListener("click", printMousePos);
+   canvas.removeEventListener('click', drawMeasurePoint);
+   pointsRedLeft.length = 0;
+   pointsRedRight.length = 0;
+   pointsBlueLeft.length = 0;
+   pointsBlueRight.length = 0;
+   pointsMeasure.length = 0;
+   canvas.style.cursor = "auto";
    imgContainer.style.backgroundSize = img.width + "px " + img.height + "px";
    canvas.width = img.width;
    canvas.height = img.height;
@@ -612,7 +655,24 @@ let img = new Image();
  }
 
  function resizeFifty(){
-   imgSizeStatus = 0.5;
+  var elems = document.querySelectorAll(".active");
+   [].forEach.call(elems, function(el) {
+    el.classList.remove("active");
+   });
+  canvas.removeEventListener('click', drawBlueLeft);
+  canvas.removeEventListener('click', drawBlueRight);
+  canvas.removeEventListener('click', drawRedLeft);
+  canvas.removeEventListener('click', drawRedRight);
+  canvas.removeEventListener("click", printMousePos);
+  canvas.removeEventListener('click', drawMeasurePoint);
+  pointsRedLeft.length = 0;
+  pointsRedRight.length = 0;
+  pointsBlueLeft.length = 0;
+  pointsBlueRight.length = 0;
+  pointsMeasure.length = 0;
+  canvas.style.cursor = "auto";
+  pointSize = 4;  // when clicking reset canvas point size also goes to default --- can be changed
+  showSize.innerHTML = "Current point size is: " + pointSize;
    imgContainer.style.backgroundSize = img.width*0.5 + "px " + img.height*0.5 + "px";
    imgContainer.style.width = img.width*0.5 + "px";
    imgContainer.style.height = img.height*0.5 + "px";
@@ -622,7 +682,24 @@ let img = new Image();
  }
 
  function resizeSF(){
-   imgSizeStatus = 0.75;
+  var elems = document.querySelectorAll(".active");
+   [].forEach.call(elems, function(el) {
+    el.classList.remove("active");
+   });
+   canvas.removeEventListener('click', drawBlueLeft);
+   canvas.removeEventListener('click', drawBlueRight);
+   canvas.removeEventListener('click', drawRedLeft);
+   canvas.removeEventListener('click', drawRedRight);
+   canvas.removeEventListener("click", printMousePos);
+   canvas.removeEventListener('click', drawMeasurePoint);
+   pointsRedLeft.length = 0;
+   pointsRedRight.length = 0;
+   pointsBlueLeft.length = 0;
+   pointsBlueRight.length = 0;
+   pointsMeasure.length = 0;
+   canvas.style.cursor = "auto";
+   pointSize = 4;  // when clicking reset canvas point size also goes to default --- can be changed
+   showSize.innerHTML = "Current point size is: " + pointSize;
    imgContainer.style.backgroundSize = img.width*0.75 + "px " + img.height*0.75 + "px";
    imgContainer.style.width = img.width*0.75 + "px";
    imgContainer.style.height = img.height*0.75 + "px";
@@ -632,7 +709,24 @@ let img = new Image();
  }
 
  function resizeForty(){
-   imgSizeStatus = 0.4;
+  var elems = document.querySelectorAll(".active");
+   [].forEach.call(elems, function(el) {
+    el.classList.remove("active");
+   });
+   canvas.removeEventListener('click', drawBlueLeft);
+   canvas.removeEventListener('click', drawBlueRight);
+   canvas.removeEventListener('click', drawRedLeft);
+   canvas.removeEventListener('click', drawRedRight);
+   canvas.removeEventListener("click", printMousePos);
+   canvas.removeEventListener('click', drawMeasurePoint);
+   pointsRedLeft.length = 0;
+   pointsRedRight.length = 0;
+   pointsBlueLeft.length = 0;
+   pointsBlueRight.length = 0;
+   pointsMeasure.length = 0;
+   canvas.style.cursor = "auto";
+   pointSize = 4;  // when clicking reset canvas point size also goes to default --- can be changed
+   showSize.innerHTML = "Current point size is: " + pointSize;
    imgContainer.style.backgroundSize = img.width*0.4 + "px " + img.height*0.4 + "px";
    imgContainer.style.width = img.width*0.4 + "px";
    imgContainer.style.height = img.height*0.4 + "px";
@@ -642,7 +736,24 @@ let img = new Image();
  }
 
  function resizeTwentyF(){
-   imgSizeStatus = 0.25;
+  var elems = document.querySelectorAll(".active");
+   [].forEach.call(elems, function(el) {
+    el.classList.remove("active");
+   });
+   canvas.removeEventListener('click', drawBlueLeft);
+   canvas.removeEventListener('click', drawBlueRight);
+   canvas.removeEventListener('click', drawRedLeft);
+   canvas.removeEventListener('click', drawRedRight);
+   canvas.removeEventListener("click", printMousePos);
+   canvas.removeEventListener('click', drawMeasurePoint);
+   pointsRedLeft.length = 0;
+   pointsRedRight.length = 0;
+   pointsBlueLeft.length = 0;
+   pointsBlueRight.length = 0;
+   pointsMeasure.length = 0;
+   canvas.style.cursor = "auto";
+   pointSize = 4;  // when clicking reset canvas point size also goes to default --- can be changed
+   showSize.innerHTML = "Current point size is: " + pointSize;
    imgContainer.style.backgroundSize = img.width*0.25 + "px " + img.height*0.25 + "px";
    imgContainer.style.width = img.width*0.25 + "px";
    imgContainer.style.height = img.height*0.25 + "px";
@@ -710,15 +821,20 @@ let img = new Image();
    canvasUpload.style.display = "none";
    canvas.width = 0;
    canvas.height = 0;
+   pointsRedLeft.length = 0;
+   pointsRedRight.length = 0;
+   pointsBlueLeft.length = 0;
+   pointsBlueRight.length = 0;
+   pointsMeasure.length = 0;
    imgContainer.style.width = "0";
    imgContainer.style.height = "0";
-   document.getElementById("inputScreenInches").value = '';
-   document.getElementById("inputScreenInches").style.display = 'none';
-   document.getElementById("screenPPI").innerHTML = '';
-   document.getElementById("imageDimInches").innerHTML = '';
-   document.getElementById("imageDimCm").innerHTML = '';
-   document.getElementById("labelInput").style.display = 'none';
-   document.getElementById("ppiCalculus").style.display = 'none';
+  //  document.getElementById("inputScreenInches").value = '';
+  //  document.getElementById("inputScreenInches").style.display = 'none';
+  //  document.getElementById("screenPPI").innerHTML = '';
+  //  document.getElementById("imageDimInches").innerHTML = '';
+  //  document.getElementById("imageDimCm").innerHTML = '';
+  //  document.getElementById("labelInput").style.display = 'none';
+  //  document.getElementById("ppiCalculus").style.display = 'none';
    document.getElementById("savedDistance").style.display = "none";
    document.getElementById("showData").style.display = "none";
    imgContainer.style.border = "none";
@@ -730,31 +846,12 @@ let img = new Image();
    // imgWidthInput.value = '';
    // imgHeightInput.value = '';
    tableTitle.innerHTML = '<b>Table ID: <b>';
+   document.getElementById("measureToCm").innerHTML = "";
+   dist = 0; 
  }
 
 //---------------------------------------------------------//
 
-// Resolution section //
-
- function getUserResolution(){
-   document.getElementById("userResolution").innerHTML ="<strong>Your resolution is:</strong> " + window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio;
- }
-
- getUserResolution();
-
- function getScreenPPI(){
-   let diagonal = Math.sqrt(Math.pow((window.screen.width * window.devicePixelRatio), 2)+Math.pow((window.screen.height * window.devicePixelRatio), 2));
-   if (document.getElementById("inputScreenInches").value != ''){
-     document.getElementById("screenPPI").innerHTML = "<b>Your screen PPI is:</b> " + (diagonal/document.getElementById("inputScreenInches").value).toFixed(2);
-     document.getElementById("imageDimInches").innerHTML = "<b>Your image dimensions in inches are:</b> " + (img.width/(diagonal/document.getElementById("inputScreenInches").value)).toFixed(2)
-     + "x" + (img.height/(diagonal/document.getElementById("inputScreenInches").value)).toFixed(2);
-     document.getElementById("imageDimCm").innerHTML = "<b>Your image dimensions in cm are:</b> " + ((img.width/(diagonal/document.getElementById("inputScreenInches").value)) * 2.54).toFixed(2)
-     + "x" + ((img.height/(diagonal/document.getElementById("inputScreenInches").value)) * 2.54).toFixed(2);
-   } else
-   alert("No screen size in inches was given");
- }
-
-// --------------------------------------- //
 
 
 // OPTIONS LIST DYNAMIC - SHOWING EVERY AVAILABLE OPTIONS OF POINTS TO CHOOSE //
@@ -850,7 +947,6 @@ tbody = document.getElementById("tbody");
 let pixelsManual = document.getElementById("pixelsInCmMan");
 
 let footstepsBeginning = document.getElementById('footstepsBeginning');
-// footstepsBeginning.style.display = 'none';
 let footstepStart = document.getElementById('footstepStart');
 let measurementType = document.getElementById("measurement");
 
@@ -866,377 +962,389 @@ let measurementType = document.getElementById("measurement");
 // }
 // })
 
-function addEntry(){
-if (measurementType.options[measurementType.selectedIndex].value == 'Stride length left front'){
- if (pointsRedLeft.length > 1){
-   for (var i = 0; i < (pointsRedLeft.length-1); i++){
-     var newRow = tbody.insertRow(-1);
-     let indexRow = newRow.rowIndex;
-     var cellOne = newRow.insertCell();
-     var cellTwo = newRow.insertCell();
-     var cellThree = newRow.insertCell();
-     var cellFour = newRow.insertCell();
-     var cellFive = newRow.insertCell();
-     cellOne.innerHTML = indexRow-1;
-     cellTwo.innerHTML = 'Red L' + (i+1) + ' &#x2192 Red L' + (i+2);
-     cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-     distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i+1].x, pointsRedLeft[i].y - pointsRedLeft[i+1].y)).toFixed(2);
-     cellFour.innerHTML = distance;
-     if (dist != 0){
-       cellFive.innerHTML = (distance/dist).toFixed(2);
-     } else{
-       cellFive.innerHTML = 'Undefined';
-     }
-    //  cellRemove.innerHTML = '&#x2718;';
-    //  cellRemove.style.cursor = 'pointer';
-    //  cellRemove.style.fontSize = 'x-large';
-    //  cellRemove.style.color = 'red';
-    //  cellRemove.onclick = function removeOnClick(){
-    //   tbody.deleteRow(indexRow-2);
-    //   for (var i = 0; i < tbody.rows.length; i++){
-    //     let updatedCell = tbody.rows[i].cells[0];
-    //     updatedCell.innerHTML = i+1;
-    //   }
-    // };
-   }
- } else{
-   alert('Not enough points to perform this measurement');
- } 
-} if (measurementType.options[measurementType.selectedIndex].value == 'Stride length right front'){
- if (pointsRedRight.length > 1){
-   for (var i = 0; i < (pointsRedRight.length-1); i++){
-     var newRow = tbody.insertRow(-1);
-     let indexRow = newRow.rowIndex;
-     var cellOne = newRow.insertCell();
-     var cellTwo = newRow.insertCell();
-     var cellThree = newRow.insertCell();
-     var cellFour = newRow.insertCell();
-     var cellFive = newRow.insertCell();
-     cellOne.innerHTML = indexRow-1;
-     cellTwo.innerHTML = 'Red R' + (i+1) + ' &#x2192 Red R' + (i+2);
-     cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-     distance = (Math.hypot(pointsRedRight[i].x - pointsRedRight[i+1].x, pointsRedRight[i].y - pointsRedRight[i+1].y)).toFixed(2);
-     cellFour.innerHTML = distance;
-     if (dist != 0){
-       cellFive.innerHTML = (distance/dist).toFixed(2);
-     } else{
-       cellFive.innerHTML = 'Undefined';
-     }
-   }
- }  else{
-   alert('Not enough points to perform this measurement');
- }
-} if (measurementType.options[measurementType.selectedIndex].value == 'Stride length left hind'){
- if (pointsBlueLeft.length > 1){
-   for (var i = 0; i < (pointsBlueLeft.length-1); i++){
-     var newRow = tbody.insertRow(-1);
-     let indexRow = newRow.rowIndex;
-     var cellOne = newRow.insertCell();
-     var cellTwo = newRow.insertCell();
-     var cellThree = newRow.insertCell();
-     var cellFour = newRow.insertCell();
-     var cellFive = newRow.insertCell();
-     cellOne.innerHTML = indexRow-1;
-     cellTwo.innerHTML = 'Blue L' + (i+1) + ' &#x2192 Blue L' + (i+2);
-     cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-     distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i+1].x, pointsBlueLeft[i].y - pointsBlueLeft[i+1].y)).toFixed(2);
-     cellFour.innerHTML = distance;
-     if (dist != 0){
-       cellFive.innerHTML = (distance/dist).toFixed(2);
-     } else{
-       cellFive.innerHTML = 'Undefined';
-     }
-   }
- }  else{
-   alert('Not enough points to perform this measurement');
- }
-} if (measurementType.options[measurementType.selectedIndex].value == 'Stride length right hind'){
- if (pointsBlueRight.length > 1){
-   for (var i = 0; i < (pointsBlueRight.length-1); i++){
-     var newRow = tbody.insertRow(-1);
-     let indexRow = newRow.rowIndex;
-     var cellOne = newRow.insertCell();
-     var cellTwo = newRow.insertCell();
-     var cellThree = newRow.insertCell();
-     var cellFour = newRow.insertCell();
-     var cellFive = newRow.insertCell();
-     cellOne.innerHTML = indexRow-1;
-     cellTwo.innerHTML = 'Blue R' + (i+1) + ' &#x2192 Blue R' + (i+2);
-     cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-     distance = (Math.hypot(pointsBlueRight[i].x - pointsBlueRight[i+1].x, pointsBlueRight[i].y - pointsBlueRight[i+1].y)).toFixed(2);
-     cellFour.innerHTML = distance;
-     if (dist != 0){
-       cellFive.innerHTML = (distance/dist).toFixed(2);
-     } else{
-       cellFive.innerHTML = 'Undefined';
-     }
-   }
- }  else{
-   alert('Not enough points to perform this measurement');
- }
-} if (measurementType.options[measurementType.selectedIndex].value == 'Overlap Left'){
-  if ((pointsRedLeft.length >= 1) && (pointsBlueLeft.length >= 1)){
-  for (var i= 0; i < pointsRedLeft.length; i++){
-    for (var j = 0; j < pointsBlueLeft.length; j++){
-      if (i == j){
-      var newRow = tbody.insertRow(-1);
-      let indexRow = newRow.rowIndex;
-      var cellOne = newRow.insertCell();
-      var cellTwo = newRow.insertCell();
-      var cellThree = newRow.insertCell();
-      var cellFour = newRow.insertCell();
-      var cellFive = newRow.insertCell();
-      cellOne.innerHTML = indexRow-1;
-      cellTwo.innerHTML = 'Red L' + (i+1) + ' &#x2192 Blue L' + (j+1);
-      cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-      distance = (Math.hypot(pointsRedLeft[i].x - pointsBlueLeft[j].x, pointsRedLeft[i].y - pointsBlueLeft[j].y)).toFixed(2);
-      cellFour.innerHTML = distance;
-      if (dist != 0){
-        cellFive.innerHTML = (distance/dist).toFixed(2);
-      } else{
-        cellFive.innerHTML = 'Undefined';
-      }
-   }
- }
- }
-} else{
-  alert('Not enough points to perform this measurement');
-}
-} if (measurementType.options[measurementType.selectedIndex].value == 'Overlap Right'){
-  if ((pointsRedRight.length >= 1) && (pointsBlueRight.length >= 1)){
-  for (var i= 0; i < pointsRedRight.length; i++){
-   for (var j = 0; j < pointsBlueRight.length; j++){
-     if (i == j){
-     var newRow = tbody.insertRow(-1);
-     let indexRow = newRow.rowIndex;
-     var cellOne = newRow.insertCell();
-     var cellTwo = newRow.insertCell();
-     var cellThree = newRow.insertCell();
-     var cellFour = newRow.insertCell();
-     var cellFive = newRow.insertCell();
-     cellOne.innerHTML = indexRow-1;
-     cellTwo.innerHTML = 'Red R' + (i+1) + ' &#x2192 Blue R' + (j+1);
-     cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-     distance = (Math.hypot(pointsRedRight[i].x - pointsBlueRight[j].x, pointsRedRight[i].y - pointsBlueRight[j].y)).toFixed(2);
-     cellFour.innerHTML = distance;
-     if (dist != 0){
-       cellFive.innerHTML = (distance/dist).toFixed(2);
-     } else{
-       cellFive.innerHTML = 'Undefined';
-     }
-   }
- }
- }
-} else{
-  alert('Not enough points to perform this measurement');
-}
-} if (measurementType.options[measurementType.selectedIndex].value == 'Stride Width Front'){
- if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
-  if((pointsRedLeft.length >= 1) && (pointsRedRight.length >= 1)){
-   for (var i = 0; i < pointsRedLeft.length; i++){
-     for (var j = 0; j < pointsRedRight.length; j++){
-       if (i == j){
-         var newRow = tbody.insertRow(-1);
-         let indexRow = newRow.rowIndex;
-         var cellOne = newRow.insertCell();
-         var cellTwo = newRow.insertCell();
-         var cellThree = newRow.insertCell();
-         var cellFour = newRow.insertCell();
-         var cellFive = newRow.insertCell();
-         cellOne.innerHTML = indexRow-1;
-         cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Red R' + (j+1);
-         cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-         distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(2);
-         cellFour.innerHTML = distance;
-         if (dist != 0){
-           cellFive.innerHTML = (distance/dist).toFixed(2);
-         } else{
-           cellFive.innerHTML = 'Undefined';
-         }
-     } if (i == j+1){
-       var newRow = tbody.insertRow(-1);
-         let indexRow = newRow.rowIndex;
-         var cellOne = newRow.insertCell();
-         var cellTwo = newRow.insertCell();
-         var cellThree = newRow.insertCell();
-         var cellFour = newRow.insertCell();
-         var cellFive = newRow.insertCell();
-         cellOne.innerHTML = indexRow-1;
-         cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Red L' + (i+1);
-         cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-         distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(2);
-         cellFour.innerHTML = distance;
-         if (dist != 0){
-           cellFive.innerHTML = (distance/dist).toFixed(2);
-         }else{
-           cellFive.innerHTML = 'Undefined';
-         } 
-     }
-     }
-   }
-  } else{
-  alert('Not enough points to perform this measurement');
- }
-}
- if (footstepStart.options[footstepStart.selectedIndex].value == 'Right'){
-  if((pointsRedLeft.length >= 1) && (pointsRedRight.length >= 1)){ 
-  for (var i = 0; i < pointsRedLeft.length; i++){
-     for (var j = 0; j < pointsRedRight.length; j++){
-       if (i == j){
-         var newRow = tbody.insertRow(-1);
-         let indexRow = newRow.rowIndex;
-         var cellOne = newRow.insertCell();
-         var cellTwo = newRow.insertCell();
-         var cellThree = newRow.insertCell();
-         var cellFour = newRow.insertCell();
-         var cellFive = newRow.insertCell();
-         cellOne.innerHTML = indexRow-1;
-         cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Red L' + (i+1);
-         cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-         distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, pointsRedRight[j].y - pointsRedLeft[i].y)).toFixed(2);
-         cellFour.innerHTML = distance;
-         if (dist != 0){
-           cellFive.innerHTML = (distance/dist).toFixed(2);
-         } else{
-           cellFive.innerHTML = 'Undefined';
-         }
-     } if (j == i+1){
-       var newRow = tbody.insertRow(-1);
-         let indexRow = newRow.rowIndex;
-         var cellOne = newRow.insertCell();
-         var cellTwo = newRow.insertCell();
-         var cellThree = newRow.insertCell();
-         var cellFour = newRow.insertCell();
-         var cellFive = newRow.insertCell();
-         cellOne.innerHTML = indexRow-1;
-         cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Red R' + (j+1);
-         cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-         distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(2);
-         cellFour.innerHTML = distance;
-         if (dist != 0){
-           cellFive.innerHTML = (distance/dist).toFixed(2);
-         }else{
-           cellFive.innerHTML = 'Undefined';
-         } 
-     }
-     }
-   }
- } else{
-  alert('Not enough points to perform this measurement');
- }
-}
-} if (measurementType.options[measurementType.selectedIndex].value == 'Stride Width Hind'){
- if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
-  if((pointsBlueLeft.length >= 1) &&(pointsBlueRight.length >= 1)){
-   for (var i = 0; i < pointsBlueLeft.length; i++){
-     for (var j = 0; j < pointsBlueRight.length; j++){
-       if (i == j){
-         var newRow = tbody.insertRow(-1);
-         let indexRow = newRow.rowIndex;
-         var cellOne = newRow.insertCell();
-         var cellTwo = newRow.insertCell();
-         var cellThree = newRow.insertCell();
-         var cellFour = newRow.insertCell();
-         var cellFive = newRow.insertCell();
-         cellOne.innerHTML = indexRow-1;
-         cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Blue R' + (j+1);
-         cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-         distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(2);
-         cellFour.innerHTML = distance;
-         if (dist != 0){
-           cellFive.innerHTML = (distance/dist).toFixed(2);
-         } else{
-           cellFive.innerHTML = 'Undefined';
-         }
-     } if (i == j+1){
-       var newRow = tbody.insertRow(-1);
-         let indexRow = newRow.rowIndex;
-         var cellOne = newRow.insertCell();
-         var cellTwo = newRow.insertCell();
-         var cellThree = newRow.insertCell();
-         var cellFour = newRow.insertCell();
-         var cellFive = newRow.insertCell();
-         cellOne.innerHTML = indexRow-1;
-         cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Blue L' + (i+1);
-         cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-         distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(2);
-         cellFour.innerHTML = distance;
-         if (dist != 0){
-           cellFive.innerHTML = (distance/dist).toFixed(2);
-         }else{
-           cellFive.innerHTML = 'Undefined';
-         } 
-     }
-     }
-   }
- } else{
-  alert('Not enough points to perform this measurement');
- }
-}
- if (footstepStart.options[footstepStart.selectedIndex].value == 'Right'){
-  if((pointsBlueLeft.length >= 1) &&(pointsBlueRight.length >= 1)){
-   for (var i = 0; i < pointsBlueLeft.length; i++){
-     for (var j = 0; j < pointsBlueRight.length; j++){
-       if (i == j){
-         var newRow = tbody.insertRow(-1);
-         let indexRow = newRow.rowIndex;
-         var cellOne = newRow.insertCell();
-         var cellTwo = newRow.insertCell();
-         var cellThree = newRow.insertCell();
-         var cellFour = newRow.insertCell();
-         var cellFive = newRow.insertCell();
-         cellOne.innerHTML = indexRow-1;
-         cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Blue L' + (i+1);
-         cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-         distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, pointsBlueRight[j].y - pointsBlueLeft[i].y)).toFixed(2);
-         cellFour.innerHTML = distance;
-         if (dist != 0){
-           cellFive.innerHTML = (distance/dist).toFixed(2);
-         } else{
-           cellFive.innerHTML = 'Undefined';
-         }
-     } if (j == i+1){
-       var newRow = tbody.insertRow(-1);
-         let indexRow = newRow.rowIndex;
-         var cellOne = newRow.insertCell();
-         var cellTwo = newRow.insertCell();
-         var cellThree = newRow.insertCell();
-         var cellFour = newRow.insertCell();
-         var cellFive = newRow.insertCell();
-         cellOne.innerHTML = indexRow-1;
-         cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Blue R' + (j+1);
-         cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
-         distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(2);
-         cellFour.innerHTML = distance;
-         if (dist != 0){
-           cellFive.innerHTML = (distance/dist).toFixed(2);
-         }else{
-           cellFive.innerHTML = 'Undefined';
-         } 
-       }
-     }
-   }
- }else{
-  alert('Not enough points to perform this measurement');
- }
-}
-}
-}
+// function addEntry(){
+// if (measurementType.options[measurementType.selectedIndex].value == 'Stride length left front'){
+//  if (pointsRedLeft.length > 1){
+//    for (var i = 0; i < (pointsRedLeft.length-1); i++){
+//      var newRow = tbody.insertRow(-1);
+//      let indexRow = newRow.rowIndex;
+//      var cellOne = newRow.insertCell();
+//      var cellTwo = newRow.insertCell();
+//      var cellThree = newRow.insertCell();
+//      var cellFour = newRow.insertCell();
+//      var cellFive = newRow.insertCell();
+//      cellOne.innerHTML = indexRow-1;
+//      cellTwo.innerHTML = 'Red L' + (i+1) + ' &#x2192 Red L' + (i+2);
+//      cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//      distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i+1].x, pointsRedLeft[i].y - pointsRedLeft[i+1].y)).toFixed(2);
+//      cellFour.innerHTML = distance;
+//      if (dist != 0){
+//        cellFive.innerHTML = (distance/dist).toFixed(2);
+//      } else{
+//        cellFive.innerHTML = "Undefined";
+//      }
+//     //  cellRemove.innerHTML = '&#x2718;';
+//     //  cellRemove.style.cursor = 'pointer';
+//     //  cellRemove.style.fontSize = 'x-large';
+//     //  cellRemove.style.color = 'red';
+//     //  cellRemove.onclick = function removeOnClick(){
+//     //   tbody.deleteRow(indexRow-2);
+//     //   for (var i = 0; i < tbody.rows.length; i++){
+//     //     let updatedCell = tbody.rows[i].cells[0];
+//     //     updatedCell.innerHTML = i+1;
+//     //   }
+//     // };
+//    }
+//  } else{
+//    alert('Not enough points to perform this measurement');
+//  } 
+// } if (measurementType.options[measurementType.selectedIndex].value == 'Stride length right front'){
+//  if (pointsRedRight.length > 1){
+//    for (var i = 0; i < (pointsRedRight.length-1); i++){
+//      var newRow = tbody.insertRow(-1);
+//      let indexRow = newRow.rowIndex;
+//      var cellOne = newRow.insertCell();
+//      var cellTwo = newRow.insertCell();
+//      var cellThree = newRow.insertCell();
+//      var cellFour = newRow.insertCell();
+//      var cellFive = newRow.insertCell();
+//      cellOne.innerHTML = indexRow-1;
+//      cellTwo.innerHTML = 'Red R' + (i+1) + ' &#x2192 Red R' + (i+2);
+//      cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//      distance = (Math.hypot(pointsRedRight[i].x - pointsRedRight[i+1].x, pointsRedRight[i].y - pointsRedRight[i+1].y)).toFixed(2);
+//      cellFour.innerHTML = distance;
+//      if (dist != 0){
+//        cellFive.innerHTML = (distance/dist).toFixed(2);
+//      } else{
+//        cellFive.innerHTML = 'Undefined';
+//      }
+//    }
+//  }  else{
+//    alert('Not enough points to perform this measurement');
+//  }
+// } if (measurementType.options[measurementType.selectedIndex].value == 'Stride length left hind'){
+//  if (pointsBlueLeft.length > 1){
+//    for (var i = 0; i < (pointsBlueLeft.length-1); i++){
+//      var newRow = tbody.insertRow(-1);
+//      let indexRow = newRow.rowIndex;
+//      var cellOne = newRow.insertCell();
+//      var cellTwo = newRow.insertCell();
+//      var cellThree = newRow.insertCell();
+//      var cellFour = newRow.insertCell();
+//      var cellFive = newRow.insertCell();
+//      cellOne.innerHTML = indexRow-1;
+//      cellTwo.innerHTML = 'Blue L' + (i+1) + ' &#x2192 Blue L' + (i+2);
+//      cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//      distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i+1].x, pointsBlueLeft[i].y - pointsBlueLeft[i+1].y)).toFixed(2);
+//      cellFour.innerHTML = distance;
+//      if (dist != 0){
+//        cellFive.innerHTML = (distance/dist).toFixed(2);
+//      } else{
+//        cellFive.innerHTML = 'Undefined';
+//      }
+//    }
+//  }  else{
+//    alert('Not enough points to perform this measurement');
+//  }
+// } if (measurementType.options[measurementType.selectedIndex].value == 'Stride length right hind'){
+//  if (pointsBlueRight.length > 1){
+//    for (var i = 0; i < (pointsBlueRight.length-1); i++){
+//      var newRow = tbody.insertRow(-1);
+//      let indexRow = newRow.rowIndex;
+//      var cellOne = newRow.insertCell();
+//      var cellTwo = newRow.insertCell();
+//      var cellThree = newRow.insertCell();
+//      var cellFour = newRow.insertCell();
+//      var cellFive = newRow.insertCell();
+//      cellOne.innerHTML = indexRow-1;
+//      cellTwo.innerHTML = 'Blue R' + (i+1) + ' &#x2192 Blue R' + (i+2);
+//      cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//      distance = (Math.hypot(pointsBlueRight[i].x - pointsBlueRight[i+1].x, pointsBlueRight[i].y - pointsBlueRight[i+1].y)).toFixed(2);
+//      cellFour.innerHTML = distance;
+//      if (dist != 0){
+//        cellFive.innerHTML = (distance/dist).toFixed(2);
+//      } else{
+//        cellFive.innerHTML = 'Undefined';
+//      }
+//    }
+//  }  else{
+//    alert('Not enough points to perform this measurement');
+//  }
+// } if (measurementType.options[measurementType.selectedIndex].value == 'Overlap Left'){
+//   if ((pointsRedLeft.length >= 1) && (pointsBlueLeft.length >= 1)){
+//   for (var i= 0; i < pointsRedLeft.length; i++){
+//     for (var j = 0; j < pointsBlueLeft.length; j++){
+//       if (i == j){
+//       var newRow = tbody.insertRow(-1);
+//       let indexRow = newRow.rowIndex;
+//       var cellOne = newRow.insertCell();
+//       var cellTwo = newRow.insertCell();
+//       var cellThree = newRow.insertCell();
+//       var cellFour = newRow.insertCell();
+//       var cellFive = newRow.insertCell();
+//       cellOne.innerHTML = indexRow-1;
+//       cellTwo.innerHTML = 'Red L' + (i+1) + ' &#x2192 Blue L' + (j+1);
+//       cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//       distance = (Math.hypot(pointsRedLeft[i].x - pointsBlueLeft[j].x, pointsRedLeft[i].y - pointsBlueLeft[j].y)).toFixed(2);
+//       cellFour.innerHTML = distance;
+//       if (dist != 0){
+//         cellFive.innerHTML = (distance/dist).toFixed(2);
+//       } else{
+//         cellFive.innerHTML = 'Undefined';
+//       }
+//    }
+//  }
+//  }
+// } else{
+//   alert('Not enough points to perform this measurement');
+// }
+// } if (measurementType.options[measurementType.selectedIndex].value == 'Overlap Right'){
+//   if ((pointsRedRight.length >= 1) && (pointsBlueRight.length >= 1)){
+//   for (var i= 0; i < pointsRedRight.length; i++){
+//    for (var j = 0; j < pointsBlueRight.length; j++){
+//      if (i == j){
+//      var newRow = tbody.insertRow(-1);
+//      let indexRow = newRow.rowIndex;
+//      var cellOne = newRow.insertCell();
+//      var cellTwo = newRow.insertCell();
+//      var cellThree = newRow.insertCell();
+//      var cellFour = newRow.insertCell();
+//      var cellFive = newRow.insertCell();
+//      cellOne.innerHTML = indexRow-1;
+//      cellTwo.innerHTML = 'Red R' + (i+1) + ' &#x2192 Blue R' + (j+1);
+//      cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//      distance = (Math.hypot(pointsRedRight[i].x - pointsBlueRight[j].x, pointsRedRight[i].y - pointsBlueRight[j].y)).toFixed(2);
+//      cellFour.innerHTML = distance;
+//      if (dist != 0){
+//        cellFive.innerHTML = (distance/dist).toFixed(2);
+//      } else{
+//        cellFive.innerHTML = 'Undefined';
+//      }
+//    }
+//  }
+//  }
+// } else{
+//   alert('Not enough points to perform this measurement');
+// }
+// } if (measurementType.options[measurementType.selectedIndex].value == 'Stride Width Front'){
+//  if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
+//   if((pointsRedLeft.length >= 1) && (pointsRedRight.length >= 1)){
+//    for (var i = 0; i < pointsRedLeft.length; i++){
+//      for (var j = 0; j < pointsRedRight.length; j++){
+//        if (i == j){
+//          var newRow = tbody.insertRow(-1);
+//          let indexRow = newRow.rowIndex;
+//          var cellOne = newRow.insertCell();
+//          var cellTwo = newRow.insertCell();
+//          var cellThree = newRow.insertCell();
+//          var cellFour = newRow.insertCell();
+//          var cellFive = newRow.insertCell();
+//          cellOne.innerHTML = indexRow-1;
+//          cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Red R' + (j+1);
+//          cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//          distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(2);
+//          cellFour.innerHTML = distance;
+//          if (dist != 0){
+//            cellFive.innerHTML = (distance/dist).toFixed(2);
+//          } else{
+//            cellFive.innerHTML = 'Undefined';
+//          }
+//      } if (i == j+1){
+//        var newRow = tbody.insertRow(-1);
+//          let indexRow = newRow.rowIndex;
+//          var cellOne = newRow.insertCell();
+//          var cellTwo = newRow.insertCell();
+//          var cellThree = newRow.insertCell();
+//          var cellFour = newRow.insertCell();
+//          var cellFive = newRow.insertCell();
+//          cellOne.innerHTML = indexRow-1;
+//          cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Red L' + (i+1);
+//          cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//          distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(2);
+//          cellFour.innerHTML = distance;
+//          if (dist != 0){
+//            cellFive.innerHTML = (distance/dist).toFixed(2);
+//          }else{
+//            cellFive.innerHTML = 'Undefined';
+//          } 
+//      }
+//      }
+//    }
+//   } else{
+//   alert('Not enough points to perform this measurement');
+//  }
+// }
+//  if (footstepStart.options[footstepStart.selectedIndex].value == 'Right'){
+//   if((pointsRedLeft.length >= 1) && (pointsRedRight.length >= 1)){ 
+//   for (var i = 0; i < pointsRedLeft.length; i++){
+//      for (var j = 0; j < pointsRedRight.length; j++){
+//        if (i == j){
+//          var newRow = tbody.insertRow(-1);
+//          let indexRow = newRow.rowIndex;
+//          var cellOne = newRow.insertCell();
+//          var cellTwo = newRow.insertCell();
+//          var cellThree = newRow.insertCell();
+//          var cellFour = newRow.insertCell();
+//          var cellFive = newRow.insertCell();
+//          cellOne.innerHTML = indexRow-1;
+//          cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Red L' + (i+1);
+//          cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//          distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, pointsRedRight[j].y - pointsRedLeft[i].y)).toFixed(2);
+//          cellFour.innerHTML = distance;
+//          if (dist != 0){
+//            cellFive.innerHTML = (distance/dist).toFixed(2);
+//          } else{
+//            cellFive.innerHTML = 'Undefined';
+//          }
+//      } if (j == i+1){
+//        var newRow = tbody.insertRow(-1);
+//          let indexRow = newRow.rowIndex;
+//          var cellOne = newRow.insertCell();
+//          var cellTwo = newRow.insertCell();
+//          var cellThree = newRow.insertCell();
+//          var cellFour = newRow.insertCell();
+//          var cellFive = newRow.insertCell();
+//          cellOne.innerHTML = indexRow-1;
+//          cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Red R' + (j+1);
+//          cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//          distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(2);
+//          cellFour.innerHTML = distance;
+//          if (dist != 0){
+//            cellFive.innerHTML = (distance/dist).toFixed(2);
+//          }else{
+//            cellFive.innerHTML = 'Undefined';
+//          } 
+//      }
+//      }
+//    }
+//  } else{
+//   alert('Not enough points to perform this measurement');
+//  }
+// }
+// } if (measurementType.options[measurementType.selectedIndex].value == 'Stride Width Hind'){
+//  if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
+//   if((pointsBlueLeft.length >= 1) &&(pointsBlueRight.length >= 1)){
+//    for (var i = 0; i < pointsBlueLeft.length; i++){
+//      for (var j = 0; j < pointsBlueRight.length; j++){
+//        if (i == j){
+//          var newRow = tbody.insertRow(-1);
+//          let indexRow = newRow.rowIndex;
+//          var cellOne = newRow.insertCell();
+//          var cellTwo = newRow.insertCell();
+//          var cellThree = newRow.insertCell();
+//          var cellFour = newRow.insertCell();
+//          var cellFive = newRow.insertCell();
+//          cellOne.innerHTML = indexRow-1;
+//          cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Blue R' + (j+1);
+//          cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//          distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(2);
+//          cellFour.innerHTML = distance;
+//          if (dist != 0){
+//            cellFive.innerHTML = (distance/dist).toFixed(2);
+//          } else{
+//            cellFive.innerHTML = 'Undefined';
+//          }
+//      } if (i == j+1){
+//        var newRow = tbody.insertRow(-1);
+//          let indexRow = newRow.rowIndex;
+//          var cellOne = newRow.insertCell();
+//          var cellTwo = newRow.insertCell();
+//          var cellThree = newRow.insertCell();
+//          var cellFour = newRow.insertCell();
+//          var cellFive = newRow.insertCell();
+//          cellOne.innerHTML = indexRow-1;
+//          cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Blue L' + (i+1);
+//          cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//          distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(2);
+//          cellFour.innerHTML = distance;
+//          if (dist != 0){
+//            cellFive.innerHTML = (distance/dist).toFixed(2);
+//          }else{
+//            cellFive.innerHTML = 'Undefined';
+//          } 
+//      }
+//      }
+//    }
+//  } else{
+//   alert('Not enough points to perform this measurement');
+//  }
+// }
+//  if (footstepStart.options[footstepStart.selectedIndex].value == 'Right'){
+//   if((pointsBlueLeft.length >= 1) &&(pointsBlueRight.length >= 1)){
+//    for (var i = 0; i < pointsBlueLeft.length; i++){
+//      for (var j = 0; j < pointsBlueRight.length; j++){
+//        if (i == j){
+//          var newRow = tbody.insertRow(-1);
+//          let indexRow = newRow.rowIndex;
+//          var cellOne = newRow.insertCell();
+//          var cellTwo = newRow.insertCell();
+//          var cellThree = newRow.insertCell();
+//          var cellFour = newRow.insertCell();
+//          var cellFive = newRow.insertCell();
+//          cellOne.innerHTML = indexRow-1;
+//          cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Blue L' + (i+1);
+//          cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//          distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, pointsBlueRight[j].y - pointsBlueLeft[i].y)).toFixed(2);
+//          cellFour.innerHTML = distance;
+//          if (dist != 0){
+//            cellFive.innerHTML = (distance/dist).toFixed(2);
+//          } else{
+//            cellFive.innerHTML = 'Undefined';
+//          }
+//      } if (j == i+1){
+//        var newRow = tbody.insertRow(-1);
+//          let indexRow = newRow.rowIndex;
+//          var cellOne = newRow.insertCell();
+//          var cellTwo = newRow.insertCell();
+//          var cellThree = newRow.insertCell();
+//          var cellFour = newRow.insertCell();
+//          var cellFive = newRow.insertCell();
+//          cellOne.innerHTML = indexRow-1;
+//          cellTwo.innerHTML = 'Imaginary ' + (indexRow-1) + ' &#x2192 Blue R' + (j+1);
+//          cellThree.innerHTML = measurementType.options[measurementType.selectedIndex].value;
+//          distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(2);
+//          cellFour.innerHTML = distance;
+//          if (dist != 0){
+//            cellFive.innerHTML = (distance/dist).toFixed(2);
+//          }else{
+//            cellFive.innerHTML = 'Undefined';
+//          } 
+//        }
+//      }
+//    }
+//  }else{
+//   alert('Not enough points to perform this measurement');
+//  }
+// }
+// }
+// }
 
 
 let entryNumber = document.getElementById("entryNumber");
 
 function removeEntry(){
-if (entryNumber.value != ''){
- console.log(entryNumber.value);
- tbody.deleteRow(entryNumber.value - 1);
- for (var i = 0; i < tbody.rows.length; i++){
-   let updatedCell = tbody.rows[i].cells[0];
-   updatedCell.innerHTML = i+1;
- }
-} else{
- tbody.deleteRow(-1);
-}
+  let lastRow = tbody.rows[tbody.rows.length-1];
+  if (entryNumber.value != ''){
+  // console.log(entryNumber.value);
+  tbody.deleteRow(entryNumber.value - 1);
+  for (var i = 0; i < tbody.rows.length; i++){
+    let updatedCell = tbody.rows[i].cells[0];
+    if (updatedCell.innerHTML === '------------------------------BREAK------------------------------'){
+      updatedCell.innerHTML = '------------------------------BREAK------------------------------';
+    }else{
+      updatedCell.innerHTML = i+1;
+    } 
+  }
+  } else if (tbody.rows.length == 1){
+    tbody.deleteRow(-1);
+  }
+  else{
+    if (lastRow.cells[0].innerHTML === '------------------------------BREAK------------------------------'){
+      $("#tbody tr:nth-last-child(2)").remove();
+    }else{
+      tbody.deleteRow(-1);
+    } 
+  }
 }
 
 
@@ -1246,6 +1354,7 @@ function removeAllEntries(){
 }
 
 function updateTableID(){
+tableTitle.innerHTML = '<b>Table ID: <b>';
 tableTitle.innerHTML += ' ' + manualID.value;
 }
 
@@ -1393,59 +1502,519 @@ let removableRows = [];
 function removeByMeasurement(){
   if (removeMeasurement.options[removeMeasurement.selectedIndex].value == 'Overlap Left'){
     $("#tbody").find("td:contains('Overlap Left')").closest('tr').remove();
+    $("#tbody").find("td:contains('Overlap left average in cm:')").closest('tr').remove();
     for (var i = 0; i < tbody.rows.length; i++){
       let updatedCell = tbody.rows[i].cells[0];
-      updatedCell.innerHTML = i+1;
+      if (updatedCell.innerHTML === '------------------------------BREAK------------------------------'){
+        updatedCell.innerHTML = '------------------------------BREAK------------------------------';
+      } else if (updatedCell.innerHTML.indexOf(":") != -1){
+        // pass
+      }
+      else{
+        updatedCell.innerHTML = i+1;
+      } 
     }
   } if (removeMeasurement.options[removeMeasurement.selectedIndex].value == 'Overlap Right'){
     $("#tbody").find("td:contains('Overlap Right')").closest('tr').remove();
+    $("#tbody").find("td:contains('Overlap Right average in cm:')").closest('tr').remove();
     for (var i = 0; i < tbody.rows.length; i++){
       let updatedCell = tbody.rows[i].cells[0];
-      updatedCell.innerHTML = i+1;
+      if (updatedCell.innerHTML === '------------------------------BREAK------------------------------'){
+        updatedCell.innerHTML = '------------------------------BREAK------------------------------';
+      } else if (updatedCell.innerHTML.indexOf(":") != -1){
+        // pass
+      }
+      else{
+        updatedCell.innerHTML = i+1;
+      }
     }
   } if (removeMeasurement.options[removeMeasurement.selectedIndex].value == 'Stride length left front'){
     $("#tbody").find("td:contains('Stride length left front')").closest('tr').remove();
+    $("#tbody").find("td:contains('Stride length left front average in cm:')").closest('tr').remove();
     for (var i = 0; i < tbody.rows.length; i++){
       let updatedCell = tbody.rows[i].cells[0];
-      updatedCell.innerHTML = i+1;
+      if (updatedCell.innerHTML === '------------------------------BREAK------------------------------'){
+        updatedCell.innerHTML = '------------------------------BREAK------------------------------';
+      } else if (updatedCell.innerHTML.indexOf(":") != -1){
+        // pass
+      }
+      else{
+        updatedCell.innerHTML = i+1;
+      }
     }
   } if (removeMeasurement.options[removeMeasurement.selectedIndex].value == 'Stride length left hind'){
     $("#tbody").find("td:contains('Stride length left hind')").closest('tr').remove();
+    $("#tbody").find("td:contains('Stride length left hind average in cm:')").closest('tr').remove();
     for (var i = 0; i < tbody.rows.length; i++){
       let updatedCell = tbody.rows[i].cells[0];
-      updatedCell.innerHTML = i+1;
+      if (updatedCell.innerHTML === '------------------------------BREAK------------------------------'){
+        updatedCell.innerHTML = '------------------------------BREAK------------------------------';
+      } else if (updatedCell.innerHTML.indexOf(":") != -1){
+        // pass
+      }
+      else{
+        updatedCell.innerHTML = i+1;
+      }
     }
   } if (removeMeasurement.options[removeMeasurement.selectedIndex].value == 'Stride length right front'){
     $("#tbody").find("td:contains('Stride length right front')").closest('tr').remove();
+    $("#tbody").find("td:contains('Stride length right front average in cm:')").closest('tr').remove();
     for (var i = 0; i < tbody.rows.length; i++){
       let updatedCell = tbody.rows[i].cells[0];
-      updatedCell.innerHTML = i+1;
+      if (updatedCell.innerHTML === '------------------------------BREAK------------------------------'){
+        updatedCell.innerHTML = '------------------------------BREAK------------------------------';
+      } else if (updatedCell.innerHTML.indexOf(":") != -1){
+        // pass
+      }
+      else{
+        updatedCell.innerHTML = i+1;
+      } 
     }
   } if (removeMeasurement.options[removeMeasurement.selectedIndex].value == 'Stride length right hind'){
     $("#tbody").find("td:contains('Stride length right hind')").closest('tr').remove();
+    $("#tbody").find("td:contains('Stride length right hind average in cm:')").closest('tr').remove();
     for (var i = 0; i < tbody.rows.length; i++){
       let updatedCell = tbody.rows[i].cells[0];
-      updatedCell.innerHTML = i+1;
+      if (updatedCell.innerHTML === '------------------------------BREAK------------------------------'){
+        updatedCell.innerHTML = '------------------------------BREAK------------------------------';
+      } else if (updatedCell.innerHTML.indexOf(":") != -1){
+        // pass
+      }
+      else{
+        updatedCell.innerHTML = i+1;
+      }
     }
   } if (removeMeasurement.options[removeMeasurement.selectedIndex].value == 'Stride Width Front'){
     $("#tbody").find("td:contains('Stride Width Front(L)')").closest('tr').remove();
     $("#tbody").find("td:contains('Stride Width Front(R)')").closest('tr').remove();
+    $("#tbody").find("td:contains('Stride Width Front(L) average in cm:')").closest('tr').remove();
+    $("#tbody").find("td:contains('Stride Width Front(R) average in cm:')").closest('tr').remove();
     for (var i = 0; i < tbody.rows.length; i++){
       let updatedCell = tbody.rows[i].cells[0];
-      updatedCell.innerHTML = i+1;
+      if (updatedCell.innerHTML === '------------------------------BREAK------------------------------'){
+        updatedCell.innerHTML = '------------------------------BREAK------------------------------';
+      } else if (updatedCell.innerHTML.indexOf(":") != -1){
+        // pass
+      }
+      else{
+        updatedCell.innerHTML = i+1;
+      }
     }
   } if (removeMeasurement.options[removeMeasurement.selectedIndex].value == 'Stride Width Hind'){
     $("#tbody").find("td:contains('Stride Width Hind(L)')").closest('tr').remove();
     $("#tbody").find("td:contains('Stride Width Hind(R)')").closest('tr').remove();
+    $("#tbody").find("td:contains('Stride Width Hind(L) average in cm:')").closest('tr').remove();
+    $("#tbody").find("td:contains('Stride Width Hind(R) average in cm:')").closest('tr').remove();
     for (var i = 0; i < tbody.rows.length; i++){
       let updatedCell = tbody.rows[i].cells[0];
-      updatedCell.innerHTML = i+1;
+      if (updatedCell.innerHTML === '------------------------------BREAK------------------------------'){
+        updatedCell.innerHTML = '------------------------------BREAK------------------------------';
+      } else if (updatedCell.innerHTML.indexOf(":") != -1){
+        // pass
+      }
+      else{
+        updatedCell.innerHTML = i+1;
+      }
     }
   }
 }
 
 
-// WORK IN PROGRESS -- ADD ALL ENTRIES WITH ONE CLICK
+// WORK IN PROGRESS -- ADD ALL ENTRIES WITH ONE CLICK WITH AVERAGE FOR EACH MEASUREMENT
+
+function addEntriesAllAverage(){
+  var distValuesSLLF = [];
+  var distValuesSLRF = [];
+  var distValuesSLLH = [];
+  var distValuesSLRH = [];
+  var distValuesOL = [];
+  var distValuesOR = [];
+  var distValuesSWFL = [];
+  var distValuesSWHL = [];
+  var distValuesSWFR = [];
+  var distValuesSWHR = [];
+  if (dist == 0){
+    alert('Measure how many pixels are in a cm before using these option!');
+    return;
+  } else if ((pointsRedLeft.length < 2) || (pointsRedRight.length < 2) || (pointsBlueLeft.length < 2) || (pointsBlueRight.length < 2)){
+    alert('Have enough points to perform at least one of each measurement.');
+    return;
+  } else{
+  for (var i = 0; i < (pointsRedLeft.length-1); i++){
+    var newRow = tbody.insertRow(-1);
+    let indexRow = newRow.rowIndex;
+    var cellOne = newRow.insertCell();
+    var cellTwo = newRow.insertCell();
+    var cellThree = newRow.insertCell();
+    var cellFour = newRow.insertCell();
+    var cellFive = newRow.insertCell();
+    // let distance = 0;
+    cellOne.innerHTML = indexRow-1;
+    cellTwo.innerHTML = 'Red L' + (i+1) + ' &#x2192 Red L' + (i+2);
+    cellThree.innerHTML = 'Stride length left front';
+    distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i+1].x, pointsRedLeft[i].y - pointsRedLeft[i+1].y)).toFixed(3);
+    cellFour.innerHTML = distance;
+    cellFive.innerHTML = (distance/dist).toFixed(3);
+    distValuesSLLF.push(distance/dist);
+}
+  console.log(distValuesSLLF);
+  var strideLeftFrontMeanRow = tbody.insertRow(-1);
+  var strideLeftFrontRowCellOne = strideLeftFrontMeanRow.insertCell();
+  var strideLeftFrontRowCellTwo = strideLeftFrontMeanRow.insertCell();
+  strideLeftFrontRowCellOne.colSpan = "4";
+  strideLeftFrontRowCellOne.innerHTML = "<b>Stride length left front average in cm:</b> ";
+  strideLeftFrontRowCellTwo.innerHTML = ((distValuesSLLF.reduce((a, b) => a + b))/distValuesSLLF.length).toFixed(3);
+  for (var i = 0; i < (pointsRedRight.length-1); i++){
+    var newRow = tbody.insertRow(-1);
+    let indexRow = newRow.rowIndex;
+    var cellOne = newRow.insertCell();
+    var cellTwo = newRow.insertCell();
+    var cellThree = newRow.insertCell();
+    var cellFour = newRow.insertCell();
+    var cellFive = newRow.insertCell();
+    cellOne.innerHTML = indexRow-1;
+    cellTwo.innerHTML = 'Red R' + (i+1) + ' &#x2192 Red R' + (i+2);
+    cellThree.innerHTML = 'Stride length right front';
+    distance = (Math.hypot(pointsRedRight[i].x - pointsRedRight[i+1].x, pointsRedRight[i].y - pointsRedRight[i+1].y)).toFixed(3);
+    cellFour.innerHTML = distance;
+    cellFive.innerHTML = (distance/dist).toFixed(3);
+    distValuesSLRF.push(distance/dist);
+  }
+  console.log(distValuesSLRF);
+  var strideRightFrontMeanRow = tbody.insertRow(-1);
+  var strideRightFrontRowCellOne = strideRightFrontMeanRow.insertCell();
+  var strideRightFrontRowCellTwo = strideRightFrontMeanRow.insertCell();
+  strideRightFrontRowCellOne.colSpan = "4";
+  strideRightFrontRowCellOne.innerHTML = "<b>Stride length right front average in cm:</b> ";
+  strideRightFrontRowCellTwo.innerHTML = ((distValuesSLRF.reduce((a, b) => a + b))/distValuesSLRF.length).toFixed(3);
+  for (var i = 0; i < (pointsBlueLeft.length-1); i++){
+    var newRow = tbody.insertRow(-1);
+    let indexRow = newRow.rowIndex;
+    var cellOne = newRow.insertCell();
+    var cellTwo = newRow.insertCell();
+    var cellThree = newRow.insertCell();
+    var cellFour = newRow.insertCell();
+    var cellFive = newRow.insertCell();
+    cellOne.innerHTML = indexRow-1;
+    cellTwo.innerHTML = 'Blue L' + (i+1) + ' &#x2192 Blue L' + (i+2);
+    cellThree.innerHTML = 'Stride length left hind';
+    distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i+1].x, pointsBlueLeft[i].y - pointsBlueLeft[i+1].y)).toFixed(3);
+    cellFour.innerHTML = distance;
+    cellFive.innerHTML = (distance/dist).toFixed(3);
+    distValuesSLLH.push(distance/dist);
+  }
+  console.log(distValuesSLLH);
+  var strideLeftHindMeanRow = tbody.insertRow(-1);
+  var strideLeftHindRowCellOne = strideLeftHindMeanRow.insertCell();
+  var strideLeftHindRowCellTwo = strideLeftHindMeanRow.insertCell();
+  strideLeftHindRowCellOne.colSpan = "4";
+  strideLeftHindRowCellOne.innerHTML = "<b>Stride length left hind average in cm:</b> ";
+  strideLeftHindRowCellTwo.innerHTML = ((distValuesSLLH.reduce((a, b) => a + b))/distValuesSLLH.length).toFixed(3);
+  for (var i = 0; i < (pointsBlueRight.length-1); i++){
+    var newRow = tbody.insertRow(-1);
+    let indexRow = newRow.rowIndex;
+    var cellOne = newRow.insertCell();
+    var cellTwo = newRow.insertCell();
+    var cellThree = newRow.insertCell();
+    var cellFour = newRow.insertCell();
+    var cellFive = newRow.insertCell();
+    cellOne.innerHTML = indexRow-1;
+    cellTwo.innerHTML = 'Blue R' + (i+1) + ' &#x2192 Blue R' + (i+2);
+    cellThree.innerHTML = 'Stride length right hind';
+    distance = (Math.hypot(pointsBlueRight[i].x - pointsBlueRight[i+1].x, pointsBlueRight[i].y - pointsBlueRight[i+1].y)).toFixed(3);
+    cellFour.innerHTML = distance;
+    cellFive.innerHTML = (distance/dist).toFixed(3);
+    distValuesSLRH.push(distance/dist);
+  }
+  console.log(distValuesSLRH);
+  var strideRightHindMeanRow = tbody.insertRow(-1);
+  var strideRightHindRowCellOne = strideRightHindMeanRow.insertCell();
+  var strideRightHindRowCellTwo = strideRightHindMeanRow.insertCell();
+  strideRightHindRowCellOne.colSpan = "4";
+  strideRightHindRowCellOne.innerHTML = "<b>Stride length right hind average in cm:</b> ";
+  strideRightHindRowCellTwo.innerHTML = ((distValuesSLRH.reduce((a, b) => a + b))/distValuesSLRH.length).toFixed(3);
+  for (var i= 0; i < pointsRedLeft.length; i++){
+    for (var j = 0; j < pointsBlueLeft.length; j++){
+      if (i == j){
+      var newRow = tbody.insertRow(-1);
+      let indexRow = newRow.rowIndex;
+      var cellOne = newRow.insertCell();
+      var cellTwo = newRow.insertCell();
+      var cellThree = newRow.insertCell();
+      var cellFour = newRow.insertCell();
+      var cellFive = newRow.insertCell();
+      cellOne.innerHTML = indexRow-1;
+      cellTwo.innerHTML = 'Red L' + (i+1) + ' &#x2192 Blue L' + (j+1);
+      cellThree.innerHTML = 'Overlap Left';
+      distance = (Math.hypot(pointsRedLeft[i].x - pointsBlueLeft[j].x, pointsRedLeft[i].y - pointsBlueLeft[j].y)).toFixed(3);
+      cellFour.innerHTML = distance;
+      cellFive.innerHTML = (distance/dist).toFixed(3);
+      distValuesOL.push(distance/dist);
+   }
+ }
+ }
+  console.log(distValuesOL);
+  var overlapLeftMeanRow = tbody.insertRow(-1);
+  var overlapLeftRowCellOne = overlapLeftMeanRow.insertCell();
+  var overlapLeftRowCellTwo = overlapLeftMeanRow.insertCell();
+  overlapLeftRowCellOne.colSpan = "4";
+  overlapLeftRowCellOne.innerHTML = "<b>Overlap left average in cm:</b> ";
+  overlapLeftRowCellTwo.innerHTML = ((distValuesOL.reduce((a, b) => a + b))/distValuesOL.length).toFixed(3);
+ for (var i= 0; i < pointsRedRight.length; i++){
+  for (var j = 0; j < pointsBlueRight.length; j++){
+    if (i == j){
+    var newRow = tbody.insertRow(-1);
+    let indexRow = newRow.rowIndex;
+    var cellOne = newRow.insertCell();
+    var cellTwo = newRow.insertCell();
+    var cellThree = newRow.insertCell();
+    var cellFour = newRow.insertCell();
+    var cellFive = newRow.insertCell();
+    cellOne.innerHTML = indexRow-1;
+    cellTwo.innerHTML = 'Red R' + (i+1) + ' &#x2192 Blue R' + (j+1);
+    cellThree.innerHTML = 'Overlap Right';
+    distance = (Math.hypot(pointsRedRight[i].x - pointsBlueRight[j].x, pointsRedRight[i].y - pointsBlueRight[j].y)).toFixed(3);
+    cellFour.innerHTML = distance;
+    cellFive.innerHTML = (distance/dist).toFixed(3);
+    distValuesOR.push(distance/dist);
+  }
+}
+}
+console.log(distValuesOR);
+var overlapRightMeanRow = tbody.insertRow(-1);
+var overlapRightRowCellOne = overlapRightMeanRow.insertCell();
+var overlapRightRowCellTwo = overlapRightMeanRow.insertCell();
+overlapRightRowCellOne.colSpan = "4";
+overlapRightRowCellOne.innerHTML = "<b>Overlap Right average in cm:</b> ";
+overlapRightRowCellTwo.innerHTML = ((distValuesOR.reduce((a, b) => a + b))/distValuesOR.length).toFixed(3);
+if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
+    var indexImaginaryFrontLeft = 0;
+    var indexImaginaryHindLeft = 0;
+    for (var i = 0; i < pointsRedLeft.length; i++){
+      for (var j = 0; j < pointsRedRight.length; j++){
+        if (i == j){
+          var newRow = tbody.insertRow(-1);
+          let indexRow = newRow.rowIndex;
+          var cellOne = newRow.insertCell();
+          var cellTwo = newRow.insertCell();
+          var cellThree = newRow.insertCell();
+          var cellFour = newRow.insertCell();
+          var cellFive = newRow.insertCell();
+          indexImaginaryFrontLeft += 1;
+          cellOne.innerHTML = indexRow-1;
+          cellTwo.innerHTML = 'Imaginary Front ' + indexImaginaryFrontLeft + ' &#x2192 Red R' + (j+1);
+          cellThree.innerHTML = 'Stride Width Front(L)';
+          if (i < pointsRedLeft.length-1){
+          distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, (((pointsRedLeft[i].y) + (pointsRedLeft[i+1].y))/2) - pointsRedRight[j].y)).toFixed(3);
+          }else{
+          distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(3);
+          }
+          cellFour.innerHTML = distance;
+          cellFive.innerHTML = (distance/dist).toFixed(3);
+          distValuesSWFL.push(distance/dist);
+      } if (i == j+1){
+        var newRow = tbody.insertRow(-1);
+          let indexRow = newRow.rowIndex;
+          var cellOne = newRow.insertCell();
+          var cellTwo = newRow.insertCell();
+          var cellThree = newRow.insertCell();
+          var cellFour = newRow.insertCell();
+          var cellFive = newRow.insertCell();
+          indexImaginaryFrontLeft += 1;
+          cellOne.innerHTML = indexRow-1;
+          cellTwo.innerHTML = 'Imaginary Front ' + indexImaginaryFrontLeft + ' &#x2192 Red L' + (i+1);
+          cellThree.innerHTML = 'Stride Width Front(L)';
+          if (j < pointsRedRight.length-1){
+            distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, pointsRedLeft[i].y - (((pointsRedRight[j].y) + (pointsRedRight[j+1].y))/2))).toFixed(3);
+          }
+          else{
+            distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(3);
+          }
+          cellFour.innerHTML = distance;
+          cellFive.innerHTML = (distance/dist).toFixed(3);
+          distValuesSWFL.push(distance/dist);
+      }
+  }
+}
+console.log(distValuesSWFL);
+var strideWidthFrontLeftMeanRow = tbody.insertRow(-1);
+var strideWidthFrontLeftRowCellOne = strideWidthFrontLeftMeanRow.insertCell();
+var strideWidthFrontLeftRowCellTwo = strideWidthFrontLeftMeanRow.insertCell();
+strideWidthFrontLeftRowCellOne.colSpan = "4";
+strideWidthFrontLeftRowCellOne.innerHTML = "<b>Stride Width Front(L) average in cm:</b> ";
+strideWidthFrontLeftRowCellTwo.innerHTML = ((distValuesSWFL.reduce((a, b) => a + b))/distValuesSWFL.length).toFixed(3);
+    for (var i = 0; i < pointsBlueLeft.length; i++){
+      for (var j = 0; j < pointsBlueRight.length; j++){
+        if (i == j){
+          var newRow = tbody.insertRow(-1);
+          let indexRow = newRow.rowIndex;
+          var cellOne = newRow.insertCell();
+          var cellTwo = newRow.insertCell();
+          var cellThree = newRow.insertCell();
+          var cellFour = newRow.insertCell();
+          var cellFive = newRow.insertCell();
+          indexImaginaryHindLeft += 1;
+          cellOne.innerHTML = indexRow-1;
+          cellTwo.innerHTML = 'Imaginary Hind ' + indexImaginaryHindLeft + ' &#x2192 Blue R' + (j+1);
+          cellThree.innerHTML = 'Stride Width Hind(L)';
+          if (i < pointsBlueLeft.length-1){
+            distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, (((pointsBlueLeft[i].y) + (pointsBlueLeft[i+1].y))/2) - pointsBlueRight[j].y)).toFixed(3);
+          }else{
+            distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(3);
+          }
+          cellFour.innerHTML = distance;
+          cellFive.innerHTML = (distance/dist).toFixed(3);
+          distValuesSWHL.push(distance/dist);
+      } if (i == j+1){
+          var newRow = tbody.insertRow(-1);
+          let indexRow = newRow.rowIndex;
+          var cellOne = newRow.insertCell();
+          var cellTwo = newRow.insertCell();
+          var cellThree = newRow.insertCell();
+          var cellFour = newRow.insertCell();
+          var cellFive = newRow.insertCell();
+          indexImaginaryHindLeft += 1;
+          cellOne.innerHTML = indexRow-1;
+          cellTwo.innerHTML = 'Imaginary Hind ' + indexImaginaryHindLeft + ' &#x2192 Blue L' + (i+1);
+          cellThree.innerHTML = 'Stride Width Hind(L)';
+          if (j < pointsBlueRight.length-1){
+            distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, pointsBlueLeft[i].y - (((pointsBlueRight[j].y) + (pointsBlueRight[j+1].y))/2))).toFixed(3);
+          }
+          else{
+            distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(3);
+          }
+          cellFour.innerHTML = distance;
+          cellFive.innerHTML = (distance/dist).toFixed(3);
+          distValuesSWHL.push(distance/dist);
+      }
+    }
+    }
+    console.log(distValuesSWHL);
+    var strideWidthHindLeftMeanRow = tbody.insertRow(-1);
+    var strideWidthHindLeftRowCellOne = strideWidthHindLeftMeanRow.insertCell();
+    var strideWidthHindLeftRowCellTwo = strideWidthHindLeftMeanRow.insertCell();
+    strideWidthHindLeftRowCellOne.colSpan = "4";
+    strideWidthHindLeftRowCellOne.innerHTML = "<b>Stride Width Hind(L) average in cm:</b> ";
+    strideWidthHindLeftRowCellTwo.innerHTML = ((distValuesSWHL.reduce((a, b) => a + b))/distValuesSWHL.length).toFixed(3);
+}
+  if (footstepStart.options[footstepStart.selectedIndex].value == 'Right'){
+    var indexImaginaryFrontRight = 0;
+    var indexImaginaryHindRight = 0;
+    for (var i = 0; i < pointsRedLeft.length; i++){
+      for (var j = 0; j < pointsRedRight.length; j++){
+        if (i == j){
+          var newRow = tbody.insertRow(-1);
+          let indexRow = newRow.rowIndex;
+          var cellOne = newRow.insertCell();
+          var cellTwo = newRow.insertCell();
+          var cellThree = newRow.insertCell();
+          var cellFour = newRow.insertCell();
+          var cellFive = newRow.insertCell();
+          indexImaginaryFrontRight += 1;
+          cellOne.innerHTML = indexRow-1;
+          cellTwo.innerHTML = 'Imaginary Front ' + indexImaginaryFrontRight + ' &#x2192 Red L' + (i+1);
+          cellThree.innerHTML = 'Stride Width Front(R)';
+          if (j < pointsRedRight.length-1){
+            distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, (((pointsRedRight[j].y) + (pointsRedRight[j+1].y))/2) - pointsRedLeft[i].y)).toFixed(3);
+          } else{
+            distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, pointsRedRight[j].y - pointsRedLeft[i].y)).toFixed(3);
+          }
+          cellFour.innerHTML = distance;
+          cellFive.innerHTML = (distance/dist).toFixed(3);
+          distValuesSWFR.push(distance/dist);
+      } if (j == i+1){
+        var newRow = tbody.insertRow(-1);
+          let indexRow = newRow.rowIndex;
+          var cellOne = newRow.insertCell();
+          var cellTwo = newRow.insertCell();
+          var cellThree = newRow.insertCell();
+          var cellFour = newRow.insertCell();
+          var cellFive = newRow.insertCell();
+          indexImaginaryFrontRight += 1;
+          cellOne.innerHTML = indexRow-1;
+          cellTwo.innerHTML = 'Imaginary Front ' + indexImaginaryFrontRight + ' &#x2192 Red R' + (j+1);
+          cellThree.innerHTML = 'Stride Width Front(R)';
+          if (i < pointsRedLeft.length-1){
+            distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, (((pointsRedLeft[i].y) + (pointsRedLeft[i+1].y))/2) - pointsRedRight[j].y)).toFixed(3);
+          } else{
+            distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(3);
+          }
+          cellFour.innerHTML = distance;
+          cellFive.innerHTML = (distance/dist).toFixed(3);
+          distValuesSWFR.push(distance/dist);
+      }
+    }
+  }
+  console.log(distValuesSWFR);
+  var strideWidthFrontRightMeanRow = tbody.insertRow(-1);
+  var strideWidthFrontRightRowCellOne = strideWidthFrontRightMeanRow.insertCell();
+  var strideWidthFrontRightRowCellTwo = strideWidthFrontRightMeanRow.insertCell();
+  strideWidthFrontRightRowCellOne.colSpan = "4";
+  strideWidthFrontRightRowCellOne.innerHTML = "<b>Stride Width Front(R) average in cm:</b> ";
+  strideWidthFrontRightRowCellTwo.innerHTML = ((distValuesSWFR.reduce((a, b) => a + b))/distValuesSWFR.length).toFixed(3);
+  for (var i = 0; i < pointsBlueLeft.length; i++){
+    for (var j = 0; j < pointsBlueRight.length; j++){
+      if (i == j){
+        var newRow = tbody.insertRow(-1);
+        let indexRow = newRow.rowIndex;
+        var cellOne = newRow.insertCell();
+        var cellTwo = newRow.insertCell();
+        var cellThree = newRow.insertCell();
+        var cellFour = newRow.insertCell();
+        var cellFive = newRow.insertCell();
+        indexImaginaryHindRight += 1;
+        cellOne.innerHTML = indexRow-1;
+        cellTwo.innerHTML = 'Imaginary Hind ' + indexImaginaryHindRight + ' &#x2192 Blue L' + (i+1);
+        cellThree.innerHTML = 'Stride Width Hind(R)';
+        if (j < pointsBlueRight.length-1){
+          distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, (((pointsBlueRight[j].y) + (pointsBlueRight[j+1].y))/2) - pointsBlueLeft[i].y)).toFixed(3);
+        } else{
+          distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, pointsBlueRight[j].y - pointsBlueLeft[i].y)).toFixed(3);
+        }
+        cellFour.innerHTML = distance;
+        cellFive.innerHTML = (distance/dist).toFixed(3);
+        distValuesSWHR.push(distance/dist);
+    } if (j == i+1){
+      var newRow = tbody.insertRow(-1);
+        let indexRow = newRow.rowIndex;
+        var cellOne = newRow.insertCell();
+        var cellTwo = newRow.insertCell();
+        var cellThree = newRow.insertCell();
+        var cellFour = newRow.insertCell();
+        var cellFive = newRow.insertCell();
+        indexImaginaryHindRight += 1;
+        cellOne.innerHTML = indexRow-1;
+        cellTwo.innerHTML = 'Imaginary Hind ' + indexImaginaryHindRight + ' &#x2192 Blue R' + (j+1);
+        cellThree.innerHTML = 'Stride Width Hind(R)';
+        if (i < pointsBlueLeft.length-1){
+          distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, (((pointsBlueLeft[i].y) + (pointsBlueLeft[i+1].y))/2) - pointsBlueRight[j].y)).toFixed(3);
+        } else{
+          distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(3);
+        }
+        cellFour.innerHTML = distance;
+        cellFive.innerHTML = (distance/dist).toFixed(3);
+        distValuesSWHR.push(distance/dist);
+        } 
+      }
+    }
+    console.log(distValuesSWHR);
+    var strideWidthHindRightMeanRow = tbody.insertRow(-1);
+    var strideWidthHindRightRowCellOne = strideWidthHindRightMeanRow.insertCell();
+    var strideWidthHindRightRowCellTwo = strideWidthHindRightMeanRow.insertCell();
+    strideWidthHindRightRowCellOne.colSpan = "4";
+    strideWidthHindRightRowCellOne.innerHTML = "<b>Stride Width Hind(R) average in cm:</b> ";
+    strideWidthHindRightRowCellTwo.innerHTML = ((distValuesSWHR.reduce((a, b) => a + b))/distValuesSWHR.length).toFixed(3);
+  }
+} 
+var lastRow = tbody.insertRow(-1);
+var lastCell = lastRow.insertCell();
+lastCell.innerHTML = '------------------------------BREAK------------------------------';
+lastCell.colSpan = "5";
+lastCell.style.textAlign = 'center';
+}
+
+
+// FUNCTION TO ADD ALL ENTRIES IN ONE CLICK WITHOUT AVERAGE
 
 function addEntriesAll(){
   for (var i = 0; i < (pointsRedLeft.length-1); i++){
@@ -1459,10 +2028,10 @@ function addEntriesAll(){
     cellOne.innerHTML = indexRow-1;
     cellTwo.innerHTML = 'Red L' + (i+1) + ' &#x2192 Red L' + (i+2);
     cellThree.innerHTML = 'Stride length left front';
-    distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i+1].x, pointsRedLeft[i].y - pointsRedLeft[i+1].y)).toFixed(2);
+    distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i+1].x, pointsRedLeft[i].y - pointsRedLeft[i+1].y)).toFixed(3);
     cellFour.innerHTML = distance;
     if (dist != 0){
-      cellFive.innerHTML = (distance/dist).toFixed(2);
+      cellFive.innerHTML = (distance/dist).toFixed(3);
     } else{
       cellFive.innerHTML = 'Undefined';
     }
@@ -1478,10 +2047,10 @@ function addEntriesAll(){
     cellOne.innerHTML = indexRow-1;
     cellTwo.innerHTML = 'Red R' + (i+1) + ' &#x2192 Red R' + (i+2);
     cellThree.innerHTML = 'Stride length right front';
-    distance = (Math.hypot(pointsRedRight[i].x - pointsRedRight[i+1].x, pointsRedRight[i].y - pointsRedRight[i+1].y)).toFixed(2);
+    distance = (Math.hypot(pointsRedRight[i].x - pointsRedRight[i+1].x, pointsRedRight[i].y - pointsRedRight[i+1].y)).toFixed(3);
     cellFour.innerHTML = distance;
     if (dist != 0){
-      cellFive.innerHTML = (distance/dist).toFixed(2);
+      cellFive.innerHTML = (distance/dist).toFixed(3);
     } else{
       cellFive.innerHTML = 'Undefined';
     }
@@ -1497,10 +2066,10 @@ function addEntriesAll(){
     cellOne.innerHTML = indexRow-1;
     cellTwo.innerHTML = 'Blue L' + (i+1) + ' &#x2192 Blue L' + (i+2);
     cellThree.innerHTML = 'Stride length left hind';
-    distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i+1].x, pointsBlueLeft[i].y - pointsBlueLeft[i+1].y)).toFixed(2);
+    distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i+1].x, pointsBlueLeft[i].y - pointsBlueLeft[i+1].y)).toFixed(3);
     cellFour.innerHTML = distance;
     if (dist != 0){
-      cellFive.innerHTML = (distance/dist).toFixed(2);
+      cellFive.innerHTML = (distance/dist).toFixed(3);
     } else{
       cellFive.innerHTML = 'Undefined';
     }
@@ -1516,10 +2085,10 @@ function addEntriesAll(){
     cellOne.innerHTML = indexRow-1;
     cellTwo.innerHTML = 'Blue R' + (i+1) + ' &#x2192 Blue R' + (i+2);
     cellThree.innerHTML = 'Stride length right hind';
-    distance = (Math.hypot(pointsBlueRight[i].x - pointsBlueRight[i+1].x, pointsBlueRight[i].y - pointsBlueRight[i+1].y)).toFixed(2);
+    distance = (Math.hypot(pointsBlueRight[i].x - pointsBlueRight[i+1].x, pointsBlueRight[i].y - pointsBlueRight[i+1].y)).toFixed(3);
     cellFour.innerHTML = distance;
     if (dist != 0){
-      cellFive.innerHTML = (distance/dist).toFixed(2);
+      cellFive.innerHTML = (distance/dist).toFixed(3);
     } else{
       cellFive.innerHTML = 'Undefined';
     }
@@ -1537,10 +2106,10 @@ function addEntriesAll(){
       cellOne.innerHTML = indexRow-1;
       cellTwo.innerHTML = 'Red L' + (i+1) + ' &#x2192 Blue L' + (j+1);
       cellThree.innerHTML = 'Overlap Left';
-      distance = (Math.hypot(pointsRedLeft[i].x - pointsBlueLeft[j].x, pointsRedLeft[i].y - pointsBlueLeft[j].y)).toFixed(2);
+      distance = (Math.hypot(pointsRedLeft[i].x - pointsBlueLeft[j].x, pointsRedLeft[i].y - pointsBlueLeft[j].y)).toFixed(3);
       cellFour.innerHTML = distance;
       if (dist != 0){
-        cellFive.innerHTML = (distance/dist).toFixed(2);
+        cellFive.innerHTML = (distance/dist).toFixed(3);
       } else{
         cellFive.innerHTML = 'Undefined';
       }
@@ -1560,10 +2129,10 @@ function addEntriesAll(){
     cellOne.innerHTML = indexRow-1;
     cellTwo.innerHTML = 'Red R' + (i+1) + ' &#x2192 Blue R' + (j+1);
     cellThree.innerHTML = 'Overlap Right';
-    distance = (Math.hypot(pointsRedRight[i].x - pointsBlueRight[j].x, pointsRedRight[i].y - pointsBlueRight[j].y)).toFixed(2);
+    distance = (Math.hypot(pointsRedRight[i].x - pointsBlueRight[j].x, pointsRedRight[i].y - pointsBlueRight[j].y)).toFixed(3);
     cellFour.innerHTML = distance;
     if (dist != 0){
-      cellFive.innerHTML = (distance/dist).toFixed(2);
+      cellFive.innerHTML = (distance/dist).toFixed(3);
     } else{
       cellFive.innerHTML = 'Undefined';
     }
@@ -1587,11 +2156,15 @@ if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
           cellOne.innerHTML = indexRow-1;
           cellTwo.innerHTML = 'Imaginary Front ' + indexImaginaryFrontLeft + ' &#x2192 Red R' + (j+1);
           cellThree.innerHTML = 'Stride Width Front(L)';
-          distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(2);
+          if (i < pointsRedLeft.length-1){
+          distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, (((pointsRedLeft[i].y) + (pointsRedLeft[i+1].y))/2) - pointsRedRight[j].y)).toFixed(3);
+          }else{
+          distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(3);
+          }
           cellFour.innerHTML = distance;
           if (dist != 0){
-            cellFive.innerHTML = (distance/dist).toFixed(2);
-          } else{
+            cellFive.innerHTML = (distance/dist).toFixed(3);
+          }else{
             cellFive.innerHTML = 'Undefined';
           }
       } if (i == j+1){
@@ -1606,10 +2179,15 @@ if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
           cellOne.innerHTML = indexRow-1;
           cellTwo.innerHTML = 'Imaginary Front ' + indexImaginaryFrontLeft + ' &#x2192 Red L' + (i+1);
           cellThree.innerHTML = 'Stride Width Front(L)';
-          distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(2);
+          if (j < pointsRedRight.length-1){
+            distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, pointsRedLeft[i].y - (((pointsRedRight[j].y) + (pointsRedRight[j+1].y))/2))).toFixed(3);
+          }
+          else{
+            distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(3);
+          }
           cellFour.innerHTML = distance;
           if (dist != 0){
-            cellFive.innerHTML = (distance/dist).toFixed(2);
+            cellFive.innerHTML = (distance/dist).toFixed(3);
           }else{
             cellFive.innerHTML = 'Undefined';
           } 
@@ -1630,10 +2208,14 @@ if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
           cellOne.innerHTML = indexRow-1;
           cellTwo.innerHTML = 'Imaginary Hind ' + indexImaginaryHindLeft + ' &#x2192 Blue R' + (j+1);
           cellThree.innerHTML = 'Stride Width Hind(L)';
-          distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(2);
+          if (i < pointsBlueLeft.length-1){
+            distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, (((pointsBlueLeft[i].y) + (pointsBlueLeft[i+1].y))/2) - pointsBlueRight[j].y)).toFixed(3);
+          }else{
+            distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(3);
+          }
           cellFour.innerHTML = distance;
           if (dist != 0){
-            cellFive.innerHTML = (distance/dist).toFixed(2);
+            cellFive.innerHTML = (distance/dist).toFixed(3);
           } else{
             cellFive.innerHTML = 'Undefined';
           }
@@ -1649,10 +2231,15 @@ if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
           cellOne.innerHTML = indexRow-1;
           cellTwo.innerHTML = 'Imaginary Hind ' + indexImaginaryHindLeft + ' &#x2192 Blue L' + (i+1);
           cellThree.innerHTML = 'Stride Width Hind(L)';
-          distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(2);
+          if (j < pointsBlueRight.length-1){
+            distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, pointsBlueLeft[i].y - (((pointsBlueRight[j].y) + (pointsBlueRight[j+1].y))/2))).toFixed(3);
+          }
+          else{
+            distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(3);
+          }
           cellFour.innerHTML = distance;
           if (dist != 0){
-            cellFive.innerHTML = (distance/dist).toFixed(2);
+            cellFive.innerHTML = (distance/dist).toFixed(3);
           }else{
             cellFive.innerHTML = 'Undefined';
           } 
@@ -1677,10 +2264,14 @@ if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
           cellOne.innerHTML = indexRow-1;
           cellTwo.innerHTML = 'Imaginary Front ' + indexImaginaryFrontRight + ' &#x2192 Red L' + (i+1);
           cellThree.innerHTML = 'Stride Width Front(R)';
-          distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, pointsRedRight[j].y - pointsRedLeft[i].y)).toFixed(2);
+          if (j < pointsRedRight.length-1){
+            distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, (((pointsRedRight[j].y) + (pointsRedRight[j+1].y))/2) - pointsRedLeft[i].y)).toFixed(3);
+          } else{
+            distance = (Math.hypot(pointsRedLeft[i].x - pointsRedLeft[i].x, pointsRedRight[j].y - pointsRedLeft[i].y)).toFixed(3);
+          }
           cellFour.innerHTML = distance;
           if (dist != 0){
-            cellFive.innerHTML = (distance/dist).toFixed(2);
+            cellFive.innerHTML = (distance/dist).toFixed(3);
           } else{
             cellFive.innerHTML = 'Undefined';
           }
@@ -1696,10 +2287,14 @@ if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
           cellOne.innerHTML = indexRow-1;
           cellTwo.innerHTML = 'Imaginary Front ' + indexImaginaryFrontRight + ' &#x2192 Red R' + (j+1);
           cellThree.innerHTML = 'Stride Width Front(R)';
-          distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(2);
+          if (i < pointsRedLeft.length-1){
+            distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, (((pointsRedLeft[i].y) + (pointsRedLeft[i+1].y))/2) - pointsRedRight[j].y)).toFixed(3);
+          } else{
+            distance = (Math.hypot(pointsRedRight[j].x - pointsRedRight[j].x, pointsRedLeft[i].y - pointsRedRight[j].y)).toFixed(3);
+          }
           cellFour.innerHTML = distance;
           if (dist != 0){
-            cellFive.innerHTML = (distance/dist).toFixed(2);
+            cellFive.innerHTML = (distance/dist).toFixed(3);
           }else{
             cellFive.innerHTML = 'Undefined';
           } 
@@ -1720,10 +2315,14 @@ if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
         cellOne.innerHTML = indexRow-1;
         cellTwo.innerHTML = 'Imaginary Hind ' + indexImaginaryHindRight + ' &#x2192 Blue L' + (i+1);
         cellThree.innerHTML = 'Stride Width Hind(R)';
-        distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, pointsBlueRight[j].y - pointsBlueLeft[i].y)).toFixed(2);
+        if (j < pointsBlueRight.length-1){
+          distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, (((pointsBlueRight[j].y) + (pointsBlueRight[j+1].y))/2) - pointsBlueLeft[i].y)).toFixed(3);
+        } else{
+          distance = (Math.hypot(pointsBlueLeft[i].x - pointsBlueLeft[i].x, pointsBlueRight[j].y - pointsBlueLeft[i].y)).toFixed(3);
+        }
         cellFour.innerHTML = distance;
         if (dist != 0){
-          cellFive.innerHTML = (distance/dist).toFixed(2);
+          cellFive.innerHTML = (distance/dist).toFixed(3);
         } else{
           cellFive.innerHTML = 'Undefined';
         }
@@ -1739,10 +2338,14 @@ if (footstepStart.options[footstepStart.selectedIndex].value == 'Left'){
         cellOne.innerHTML = indexRow-1;
         cellTwo.innerHTML = 'Imaginary Hind ' + indexImaginaryHindRight + ' &#x2192 Blue R' + (j+1);
         cellThree.innerHTML = 'Stride Width Hind(R)';
-        distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(2);
+        if (i < pointsBlueLeft.length-1){
+          distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, (((pointsBlueLeft[i].y) + (pointsBlueLeft[i+1].y))/2) - pointsBlueRight[j].y)).toFixed(3);
+        } else{
+          distance = (Math.hypot(pointsBlueRight[j].x - pointsBlueRight[j].x, pointsBlueLeft[i].y - pointsBlueRight[j].y)).toFixed(3);
+        }
         cellFour.innerHTML = distance;
         if (dist != 0){
-          cellFive.innerHTML = (distance/dist).toFixed(2);
+          cellFive.innerHTML = (distance/dist).toFixed(3);
         }else{
           cellFive.innerHTML = 'Undefined';
         } 
@@ -1759,20 +2362,3 @@ lastCell.innerHTML = '------------------------------BREAK-----------------------
 lastCell.colSpan = "5";
 lastCell.style.textAlign = 'center';
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

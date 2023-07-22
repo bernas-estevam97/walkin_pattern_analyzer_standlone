@@ -9,7 +9,7 @@
     <title>Mouse Frame - Analysis</title>
 </head>
 <body>
-  <p id="version">v1.0.2</p>
+  <p id="version">Static Version v1</p>
     <header>
         <h1>MOUSE FRAME - <i>mus musculus</i> walking behaviour analysis tool</h1>
         <img src="./libs/img/mouse.png">
@@ -102,43 +102,12 @@
     <button onclick = "distanceMeasurePoint()" id="measureDistance">Measure</button>
     <p>Manually input known value of pixels in 1 cm or use saved values (choose only one value before clicking use):</p>
     <input id="pixelsInCmMan" type="number" size="6" placeholder="Px in cm...">&nbspOR&nbsp
-    <!-- <select id="savedChoices">
-        <option value="None" selected>None</option>
-      {% for distance in saved_distances %}
-        <option value="{{distance}}">{{distance}}</option>
-      {% endfor %}
-    </select> -->
     <button onclick="manualInputMeasure();" id="manualUse">Use</button>
     <button onclick="resetInput();" id="resetManual">Reset</button>
     <div class="measure-info"><div id="measureIntro">Measurement result:</div><div id="measureToCm"></div></div>
-    <!-- <form action="" method="POST" id="savedDistancesForm">{% csrf_token %}
-      <input type="text" name="saved_distance" id="saveDistance" onkeypress="return /[0-9.]/i.test(event.key)" maxlength="6" placeholder="Save value...">
-    <button class="save-button" type="submit">Save</button> 
-    </form>
-    <div id="messageSave"></div> -->
    </div>
   </div>
-   <div class="resolution-info">
-    <label id="labelInput" for="inches">Your screen size in inches(in):</label>
-    <input name="inches" class="input-inches" id="inputScreenInches" type="text" maxlength="4" size="4" onkeypress="if(!event.key.match(/[1-9.]/)) event.preventDefault()">
-    <button class="ppi-calc" id="ppiCalculus" onclick="getScreenPPI();">Get Screen PPI</button>
-    <p id="screenPPI"></p>
-    <p id="imageUploadedDPI"></p>
-    <p id="imageDimInches"></p>
-    <p id="imageDimCm"></p>
-   </div>
    <div class="buttons-change">
-    <!-- <input id="canvasWidth" type="number" placeholder="Canvas Width">
-    <button id="changeW" onclick="changeWidth();">Change canvas width</button>
-    <button id="resetW" onclick="resetWidth();">Reset Width</button>
-    <input id="canvasHeight" type="number" placeholder="Canvas Height">
-    <button id="changeH" onclick="changeHeight();">Change canvas height</button>
-    <button id="resetH" onclick="resetHeight();">Reset Height</button><br><br> -->
-    <!-- <input id="containerWidth" type="number" placeholder="Image Width"> -->
-    <!-- <button id="changeImgW" onclick="changeImgW();">Change image width</button> -->
-    <!-- <button id="resetImgW" onclick="resetImgW();">Reset Image Width</button> -->
-    <!-- <input id="containerHeight" type="number" placeholder="Image Height"> -->
-    <!-- <button id="changeImgDim" onclick="changeImgDim();">Change Image dimensions</button> -->
     <div class="point-size">
     <h2>Change dimensions of your marking points:</h2>
     <input id="sizeInput" type="number" placeholder="Dot Size">
@@ -149,18 +118,6 @@
     <p><strong>Note:</strong>When deleting buttons make sure you don't change radius size. Only delete points when working with a fixed size</p>
     </div>
    </div>
-   <!-- <div class="saved-distances" id="savedDistance">
-    <h2>Define how many pixels are in a centimeter.</h2>
-    <p>If there is a drawn line with the length of 1cm, measure it in pixels here:</p>
-    <p id="scaleDistance"></p>
-    <button id="measureButton" onclick="drawMeasureCircle();">Measure</button>
-    <button id="resetMeasure" onclick="removeAllMeasurePoints();">Reset</button>
-    <button type="submit">Save</button>
-    <button onclick = "distancePointRed();">DistanceRed</button>
-   </div> -->
-   <!-- <div class="dpi-ppi-conversion">
-
-   </div> -->
    <div class="data-management" id="showData">
     <div class="table-results">
     <h3>Data retrieved:</h3>
@@ -183,24 +140,6 @@
     <button id="exportEx" onclick="ExportToExcel('xlsx');"> Export to excel file </button>
   </div>
   <div class="select-options">
-    <!-- <form action="/"> -->
-      <!-- <label for="point">Select point 1:</label>
-        <select name="point" id="pointChosen1">
-        </select>
-      <label for="point">Select point 2:</label>
-      <select name="point" id="pointChosen2">
-      </select> -->
-      <!-- <label for="measurement">Measurement:</label>
-      <select name="measurement" id="measurement">
-        <option value="Overlap Left" selected>Overlap Left</option>
-        <option value="Overlap Right" selected>Overlap Right</option>
-        <option value="Stride length left front">Stride length left front</option>
-        <option value="Stride length left hind">Stride length left hind</option>
-        <option value="Stride length right front">Stride length right front</option>
-        <option value="Stride length right hind">Stride length right hind</option>
-        <option value="Stride Width Front">Stride Width Front</option>
-        <option value="Stride Width Hind">Stride Width Hind</option>
-      </select> -->
       <div id="footstepsBeginning">
       <label for="beginning">First set of footsteps:</label>
       <select name="beginning" id="footstepStart">
@@ -209,10 +148,6 @@
       </select>
       <input id="addAll" type="submit" onclick="addEntriesAll()" value="Add Entries">&nbsp<input id="addAll" type="submit" onclick="addEntriesAllAverage()" value="Add Entries with average"><br>
       </div>
-      <!-- <input type="submit" onclick="addEntry();" value="Add Entries"><br> -->
-      <!-- <br><p id="entryPreview"></p> -->
-      <!-- <button id="refreshList" onclick="refreshList();">Refresh</button>
-      <button id="empty" onclick="emptyList();">Empty</button> -->
       <div class="remove-by-entries">
       <p>Remove by entries &#8628;</p>
       <input id="entryNumber" placeholder="Entry nº" size="3" maxlength="3">
@@ -236,9 +171,7 @@
       <div class="table-id">
       <p>Insert table ID:</p><input id="entryTableID" placeholder="Enter an ID for table">&nbsp<button onclick="updateTableID()">Submit</button>&nbsp<button onclick="removeTableID();">Remove</button>
       </div>
-      <!-- <button id="test" onclick="distanceBetweenPoints();">Calculate Distance</button> -->
 
-    <!-- </form> -->
   </div>
 </div>
    <!-- </div> -->
@@ -261,6 +194,6 @@
   }
 
 </script>
-<script type="text/javascript" src="./libs/js/ajax.js"></script>
+<!-- <script type="text/javascript" src="./libs/js/ajax.js"></script> -->
 </body>
 </html>
