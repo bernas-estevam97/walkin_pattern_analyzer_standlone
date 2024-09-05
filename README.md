@@ -24,4 +24,5 @@ The image above not only shows the 8 measurements, but also shows indicators of 
 
 
 For detailed information of how every measurement is calculated there is an info page in this application.
+
 Visit: https://mouseframe.pt/
