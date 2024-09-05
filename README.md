@@ -1,4 +1,4 @@
-### MOUSE FRAME - Tool Information
+### **MOUSE FRAME - Tool Information**
 
 This program accepts images of walking pattern from mice. These images are used to analyze walking behaviour of these animals that is further used for comparison studies between healthy and sick mice. 
 These comparison studies are usually done when studying diseases that affect the brain, such as neurodefenrative diseases and others that may affect motor functions.
