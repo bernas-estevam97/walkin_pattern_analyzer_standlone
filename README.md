@@ -9,7 +9,8 @@ Example of one of these pieces of paper (akready digitalized):
 
 
 How are these images obtained?
-Scientists paint the mice paws and make them walk on top of a piece of paper. Usually after getting this long piece of paper, scientists are required to measure every single one of the measurements by hand/ruler which is an exhaustive task.
+1. Scientists paint the mice paws and make them walk on top of a piece of paper
+2. After getting this long piece of paper, scientists are required to measure every single one of the measurements by hand/ruler which is an exhaustive task.
 
 Mouseframe helps mitigate that problem. It is only required to digitalize those pieces of paper so that they can be used in this application.
 
