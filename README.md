@@ -12,7 +12,7 @@ How are these images obtained?
 1. Scientists paint the mice paws and make them walk on top of a piece of paper
 2. After getting this long piece of paper, scientists are required to measure every single one of the measurements by hand/ruler which is an exhaustive task.
 
-Mouseframe helps mitigate that problem. It is only required to digitalize those pieces of paper so that they can be used in this application.
+Mouseframe helps mitigate that problem. It is only required digitalization of those pieces of paper for usage in this application.
 
 The front paws of the mice are marked in red and the hind paws in blue. This analysis goes through 8 different types of measurements that are usually manually calculated by the scientists. The 8 measures are the following:
 
