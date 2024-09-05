@@ -14,7 +14,7 @@ How are these images obtained?
 
 Mouseframe helps mitigate that problem. It is only required digitalization of those pieces of paper for usage in this application.
 
-The front paws of the mice are marked in red and the hind paws in blue. This analysis goes through 8 different types of measurements that are usually manually calculated by the scientists. The 8 measures are the following:
+The front paws of the mice are marked in red and the hind paws in blue. This analysis goes through 8 different types of measurements. The 8 measures are the following:
 
 ![mouseframe image](https://github.com/user-attachments/assets/7c391d47-9a15-4906-b722-f4613e643e86)
 
