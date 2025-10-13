@@ -26,8 +26,8 @@
                   <p>Change to a bigger resolution to use the app <br>(>1100px of width)</p>
                   <p>You can view other pages such as:</p>
                   <ul style="list-style-type: none; padding-left: 0;">
-                    <li class="unsp-link"><a href="./info.html">Tool Information</a></li>
-                    <li class="unsp-link"><a href="./contact.html">Contact</a></li>
+                    <li class="unsp-link"><a onclick="handleNavigation('./info.html')">Tool Information</a></li>
+                    <li class="unsp-link"><a onclick="handleNavigation('./contact.html')">Contact</a></li>
                   </ul>
                   <img src="../libs/img/cartoon-mouse.png">
                 </div>
@@ -46,10 +46,10 @@
             More
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="./info.html">Information</a></li>
-            <li><a class="dropdown-item" href="./contact.html">Contact</a></li>
+            <li><a class="dropdown-item" onclick="handleNavigation('./info.html')">Information</a></li>
+            <li><a class="dropdown-item" onclick="handleNavigation('./contact.html')">Contact</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="https://abcri.pt/" target="_blank">ABC-RI</a></li>
+            <li><a class="dropdown-item" href='https://abcri.pt/' target="_blank">ABC-RI</a></li>
           </ul>
         </li>
         
@@ -78,11 +78,11 @@
                 <li>Only image file formats are supported (.tiff formats are not yet supported).</li>
                 <li>In order to draw dots to perform the calculations, this is done in canvas. The canvas as the name implies is a surface where the user can draw. In this case, only dots of different sizes and colors can be added.</li>
                 <li>All the functionalities are shown after successful image upload.</li>
-                <li>For more information on this application and to see how the calculations are made for each measurement, check the<a class="info-page" href="{% url 'info">info</a>page.</li>
+                <li>For more information on this application and to see how the calculations are made for each measurement, check the<a class="info-page" onclick="handleNavigation('./info.html')">info</a>page.</li>
                 <li>Check <button class="show-updates" id="showNews">News and updates</button> for this version.</li>
             </ul>
-            <p id="loginName">Welcome to Mouseframe! <b><u></u></b></p>
-            <p id="userResolution"></p><a class="version-button" href="./choose_version.html">Change app version</a><a class="logout-button" href="{% url 'logout">Logout</a><br>
+            <!-- <p id="loginName">Welcome to Mouseframe! <b><u></u></b></p> -->
+            <p id="userResolution"></p><a class="version-button" onclick="handleNavigation('./choose_version.html')">Change app version</a><br>
         </div>
     <!-- </div> -->
     <!-- <div class="right-part"> -->
@@ -187,7 +187,7 @@
                       <li style="margin-top: 10px;">The "Reset all" button/function will clear all your points in your selected image above, in simple terms it will reset all your work done above</li>
                     </ul>
                     <p style="font-size: 1em;">Mouse image adapted from:</p>
-                    <a href="https://www.biorender.com/" target="_blank"><img src="../libs/img/bio-render.png" style="width:254px; height: 251px;"></a><br>
+                    <a href='https://www.biorender.com/'><img src="../libs/img/bio-render.png" style="width:254px; height: 251px; cursor:pointer;"></a><br>
                     
                     </div>
                    </div>
@@ -421,10 +421,10 @@
 <footer>
   
   <div class="footer-links">
-    <a href="./contact.html" target="_blank">Contact</a>
-    <a href="./info.html" target="_blank">Information page</a>
-    <a href="https://abcri.pt/" target="_blank">ABC-RI</a>
-    <a href="https://abcri.pt/mngt/" target="_blank">MNGT</a>
+    <a onclick="handleNavigation('./contact.html')">Contact</a>
+    <a onclick="handleNavigation('./info.html')">Information page</a>
+    <a href='https://abcri.pt/' target="_blank">ABC-RI</a>
+    <a href='https://abcri.pt/mngt/' target="_blank">MNGT</a>
   </div>
   <p>© MOUSEFRAME. All rights reserved 2022<span id="year"></span><br></p>
   <div class="footer-logos">

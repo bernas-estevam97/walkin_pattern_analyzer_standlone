@@ -34,11 +34,14 @@ header h1 {
 
 .info-page{
   text-decoration: none;
+  color:hsl(216, 100%, 35%);
   padding: 3px;
 }
 
 .info-page:hover{
   text-decoration: underline;
+  cursor: pointer;
+  
 }
 
 .modal{
@@ -153,7 +156,7 @@ header h1 {
   right: 0;
 }
 
-.logout-button {
+/* .logout-button {
   position: relative;
   text-decoration: none;
   padding: 10px 15px;
@@ -162,7 +165,7 @@ header h1 {
   color: white;
   border-radius: 5px;
   border: 2px solid rgb(168, 30, 30);
-}
+} */
 
 .version-button {
   color: #000 !important;
@@ -180,10 +183,12 @@ header h1 {
 
 .logout-button:hover {
   background: rgb(168, 30, 30);
+  
 }
 
 .version-button:hover {
   background: rgb(165, 165, 165);
+  cursor: pointer;
 }
 
 .upload-btn {

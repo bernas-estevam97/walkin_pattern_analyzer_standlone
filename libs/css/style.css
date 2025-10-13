@@ -124,6 +124,10 @@ header h1 {
   background-color: var(--new-color-border) !important;
 }
 
+.dropdown-item:hover{
+  cursor:pointer;
+}
+
 .info-page{
   text-decoration: none;
   padding: 3px;
@@ -131,6 +135,7 @@ header h1 {
 
 .info-page:hover{
   text-decoration: underline;
+  cursor: pointer;
 }
 
 .show-updates{
@@ -294,9 +299,10 @@ header h1 {
 
 .version-button:hover {
   background: var(--new-color-border);
+  cursor: pointer;
 }
 
-.logout-button {
+/* .logout-button {
   position: relative;
   text-decoration: none;
   padding: 10px 15px;
@@ -310,7 +316,7 @@ header h1 {
 .logout-button:hover {
   background: rgb(168, 30, 30);
   color: white !important;
-}
+} */
 
       /* -------------------------- */
       /* IMAGE UPLOAD AND RESET BUTTONS */
@@ -433,7 +439,15 @@ header h1 {
   padding-bottom: 10px;
 }
 
+.unsp-link{
+  color: black;
+  font-weight: bold;
+}
 
+.unsp-link:hover{
+  cursor:pointer;
+  text-decoration: underline;
+}
 
 .right-side-options .point-size {
   padding-top: 25px;
@@ -1322,7 +1336,8 @@ footer .footer-links a{
 }
 
 footer .footer-links a:hover{
-  text-decoration: underline;
+  text-decoration: underline !important;
+  cursor: pointer;
 }
 
 #zoomNotice {

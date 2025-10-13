@@ -10,13 +10,13 @@
     <title>Mouse Frame - Analysis</title>
 </head>
 <body>
-  <p id="version">v1.0.0</p>
+  <p id="version">v<span data-version></span></p>
     <header>
         <h1>MOUSE FRAME - <i>Mus musculus</i> walking behaviour analysis tool</h1>
         <img src="../libs/img/mouse.png">
     </header>
     <section class="modal" id="modalNews">
-      <h2>Notices and updates - Version 1.0.0</h2>
+      <h2>Notices and updates - Version <span data-version></span></h2>
       <ul>
         <li>Fixed visual bugs for most resolutions.</li>
         <li>Added compatibility for most resolutions but this app isn't supposed to be used on mobile.</li>
@@ -36,11 +36,11 @@
                 <li>Only image file formats are supported (.tiff formats are not yet supported).</li>
                 <li>In order to draw dots to perform the calculations, this is done in canvas. The canvas as the name implies is a surface where the user can draw, in this case only dots of different sizes and colors can be added.</li>
                 <li>All the functionalities are shown after successful image upload.</li>
-                <li>For more information on this application and to see how the calculations are made for each measurement, check this <a class="info-page" href="./templates/info_old.html">link</a>.</li>
+                <li>For more information on this application and to see how the calculations are made for each measurement, check this <a class="info-page" onclick="handleNavigation('./info_old.html')">link</a>.</li>
                 <li>Check news for this version <i class="fa-solid fa-arrow-right"></i> <btn class="show-updates" id="showNews">News and updates</btn></li>
             </ul>
             <p id="userResolution"></p>
-            <p id="loginName">Welcome to the old version mouseframe!</p><a class="version-button" href="./choose_version.html">Change app version</a><a class="logout-button" href="">Logout</a><br>
+            <a class="version-button" onclick="handleNavigation('./choose_version.html')">Change app version</a><br>
         </div>
     <!-- </div> -->
     <!-- <div class="right-part"> -->

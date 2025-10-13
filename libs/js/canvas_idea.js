@@ -920,27 +920,58 @@ function resizeImageToFitViewport(img) {
 // ALERT USER BEFORE LEAVING ANALYSIS PAGE FOR ELETRON APP //
 
 
+// Alert before leaving page 
+
 function handleBeforeUnload(event) {
-  if (!window.electronAPI) return;
+  if (!window.electronAPI || isNavigating) return;
 
   if (img?.src !== '') {
-    event.preventDefault(); // Prevent default unload
+    event.preventDefault();
+    event.returnValue = ''; // required for Chromium
 
-    // Don't proceed yet, wait for user choice
-    window.electronAPI.showUnsavedWarning().then((choice) => {
+    window.electronAPI.showCloseWarning().then((choice) => {
       if (choice === 1) {
-        // ✅ User confirmed Quit
-        window.removeEventListener("beforeunload", handleBeforeUnload); // 🔁 Prevent infinite loop
-        window.electronAPI.forceClose(); // Tell main process to close
+        // ✅ Confirmed Quit
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+        window.electronAPI.forceClose();
       } else {
-        console.log("User cancelled close.");
+        console.log("Quit cancelled.");
       }
     });
+
+    return '';
   }
 }
 
-// ✅ Register handler only once
 window.addEventListener("beforeunload", handleBeforeUnload);
+
+
+let isNavigating = false;
+
+function handleNavigation(targetURL) {
+  if (img?.src !== '') {
+    window.electronAPI.showNavigationWarning().then((choice) => {
+      if (choice === 1) {
+        if (targetURL.startsWith('http')) {
+          // 🔗 Open in user's default browser
+          window.electronAPI.openExternal(targetURL);
+        } else {
+          // 🧭 Navigate internally
+          isNavigating = true;
+          window.removeEventListener("beforeunload", handleBeforeUnload);
+          window.location.href = targetURL;
+        }
+      }
+    });
+  } else {
+    // No unsaved data
+    if (targetURL.startsWith('http')) {
+      window.electronAPI.openExternal(targetURL);
+    } else {
+      window.location.href = targetURL;
+    }
+  }
+}
 
 
 

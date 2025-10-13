@@ -1,6 +1,8 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, shell } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  showUnsavedWarning: () => ipcRenderer.invoke('show-unsaved-warning'),
-  forceClose: () => ipcRenderer.invoke('force-close')
+  showCloseWarning: () => ipcRenderer.invoke('showCloseWarning'),
+  showNavigationWarning: () => ipcRenderer.invoke('showNavigationWarning'),
+  forceClose: () => ipcRenderer.invoke('force-close'),
+  openExternal: (url) => shell.openExternal(url)
 });
