@@ -1,10 +1,11 @@
-require("update-electron-app")();
-
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
+const { autoUpdater } = require('electron-updater');
 
-const createWindow = () => {
-  const win = new BrowserWindow({
+let mainWindow;
+
+function createWindow() {
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     icon: path.join(__dirname, 'libs/img/mouse-animal.ico'),
@@ -15,10 +16,10 @@ const createWindow = () => {
     }
   });
 
-  win.loadFile('templates/choose_version.html');
+  mainWindow.loadFile('templates/choose_version.html');
 
   // Open target="_blank" links in the user's default browser
-  win.webContents.setWindowOpenHandler(({ url }) => {
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('http')) {
       shell.openExternal(url);
       return { action: 'deny' };
@@ -26,30 +27,77 @@ const createWindow = () => {
     return { action: 'deny' };
   });
 
-  // Optional: Open navigated external links in browser
-  win.webContents.on('will-navigate', (event, url) => {
+  // Open navigated external links in browser
+  mainWindow.webContents.on('will-navigate', (event, url) => {
     if (url.startsWith('http') && !url.startsWith('file://')) {
       event.preventDefault();
       shell.openExternal(url);
     }
   });
-};
+
+  // Check for updates once the window is ready
+  mainWindow.once('ready-to-show', () => {
+    autoUpdater.checkForUpdatesAndNotify();
+  });
+}
+
+// AutoUpdater event handlers
+
+autoUpdater.on('checking-for-update', () => {
+  console.log('Checking for updates...');
+});
+
+autoUpdater.on('update-available', () => {
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Update Available',
+    message: 'A new version is available and is being downloaded in the background.',
+  });
+});
+
+autoUpdater.on('update-not-available', () => {
+  console.log('No updates available.');
+});
+
+autoUpdater.on('error', (err) => {
+  console.error('Error in auto-updater:', err);
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = `Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent.toFixed(2)}% (${progressObj.transferred}/${progressObj.total})`;
+  console.log(log_message);
+  // You can send this progress info to your renderer process via IPC if you want
+});
+
+autoUpdater.on('update-downloaded', () => {
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Update Ready',
+    message: 'Update downloaded. The application will now quit and install the update.',
+    buttons: ['Restart Now', 'Later']
+  }).then(result => {
+    if (result.response === 0) {
+      autoUpdater.quitAndInstall();
+    }
+  });
+});
+
+// App lifecycle
 
 app.whenReady().then(() => {
   createWindow();
 });
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
 });
 
-app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
 
-// IPC: Handle quit confirmation
+// Your existing IPC handlers here...
+
 ipcMain.handle('showCloseWarning', async () => {
   const result = await dialog.showMessageBox({
     type: 'warning',
@@ -62,7 +110,6 @@ ipcMain.handle('showCloseWarning', async () => {
   return result.response;
 });
 
-// IPC: Handle navigation confirmation
 ipcMain.handle('showNavigationWarning', async () => {
   const result = await dialog.showMessageBox({
     type: 'question',
@@ -75,7 +122,6 @@ ipcMain.handle('showNavigationWarning', async () => {
   return result.response;
 });
 
-// IPC: Force close the window
 ipcMain.handle('force-close', (event) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   if (win) win.close();
